@@ -5,7 +5,9 @@ import com.glimpse.gpm.repository.ClienteRepository;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ClienteService {
     private final ClienteRepository repository;
 
