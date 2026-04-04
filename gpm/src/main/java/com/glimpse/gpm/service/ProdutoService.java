@@ -1,6 +1,8 @@
 package com.glimpse.gpm.service;
 
-import com.glimpse.gpm.model.Produto;
+import com.glimpse.gpm.entity.Produto;
+import com.glimpse.gpm.exception.DadosInvalidosException;
+import com.glimpse.gpm.exception.RecursoNaoEncontradoException;
 import com.glimpse.gpm.repository.ProdutoRepository;
 import org.springframework.stereotype.Service;
 
@@ -18,16 +20,16 @@ public class ProdutoService {
 
     public Produto salvar(Produto produto) {
         if (produto.getNome() == null || produto.getNome().trim().isEmpty()) {
-            throw new IllegalArgumentException("O nome do produto é obrigatório.");
+            throw new DadosInvalidosException("O nome do produto é obrigatório.");
         }
         if (produto.getPreco() == null || produto.getPreco() <= 0) {
-            throw new IllegalArgumentException("O preço do produto deve ser maior que zero.");
+            throw new DadosInvalidosException("O preço do produto deve ser maior que zero.");
         }
         if (produto.getQuantidadeEstoque() == null || produto.getQuantidadeEstoque() < 0) {
-            throw new IllegalArgumentException("A quantidade em estoque não pode ser negativa.");
+            throw new DadosInvalidosException("A quantidade em estoque não pode ser negativa.");
         }
         if (repository.existsByNome(produto.getNome())) {
-            throw new IllegalArgumentException("Já existe um produto cadastrado com esse nome.");
+            throw new DadosInvalidosException("Já existe um produto cadastrado com esse nome.");
         }
 
         return repository.save(produto);
@@ -37,21 +39,21 @@ public class ProdutoService {
         return repository.findAll();
     }
 
-    public Optional<Produto> buscarProdutoPorId(Integer id) {
+    public Optional<Produto> buscarProdutoPorId(Long id) {
         return repository.findById(id);
     }
 
-    public Produto atualizar(Integer id, Produto produtoAtualizado) {
+    public Produto atualizar(Long id, Produto produtoAtualizado) {
         Optional<Produto> produtoEncontrado = repository.findById(id);
 
         if (produtoEncontrado.isEmpty()) {
-            throw new IllegalArgumentException("Produto não encontrado.");
+            throw new RecursoNaoEncontradoException("Produto não encontrado.");
         }
 
         Produto produtoBanco = produtoEncontrado.get();
 
         if (!produtoBanco.getNome().equals(produtoAtualizado.getNome()) && repository.existsByNome(produtoAtualizado.getNome())) {
-            throw new IllegalArgumentException("Já existe outro produto cadastrado com esse nome.");
+            throw new DadosInvalidosException("Já existe outro produto cadastrado com esse nome.");
         }
 
         produtoBanco.setNome(produtoAtualizado.getNome());
@@ -63,7 +65,7 @@ public class ProdutoService {
         return repository.save(produtoBanco);
     }
 
-    public boolean excluir(Integer id) {
+    public boolean excluir(Long id) {
         if (repository.existsById(id)) {
             repository.deleteById(id);
             return true;

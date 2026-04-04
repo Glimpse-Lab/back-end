@@ -1,22 +1,25 @@
-package com.glimpse.gpm.model;
+package com.glimpse.gpm.dto.cliente;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-
-@Entity
-public class Cliente {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+public class ClienteResponse {
+    private Long id;
     private String nome;
     private String cpf;
     private String cep;
     private Integer numEndereco;
     private String celular;
 
-    public Integer getId() {
+    public ClienteResponse() {}
+
+    public ClienteResponse(Long id, String nome, String cpf, String cep, Integer numEndereco, String celular) {
+        this.id = id;
+        this.nome = nome;
+        this.cpf = cpf;
+        this.cep = cep;
+        this.numEndereco = numEndereco;
+        this.celular = celular;
+    }
+
+    public Long getId() {
         return id;
     }
 

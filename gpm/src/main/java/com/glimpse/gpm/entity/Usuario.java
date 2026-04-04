@@ -1,22 +1,30 @@
-package com.glimpse.gpm.model;
+package com.glimpse.gpm.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import org.hibernate.validator.constraints.br.CPF;
 
 @Entity
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
+    @NotBlank(message = "O nome é obrigatório")
     private String nome;
+    @NotBlank(message = "CPF é obrigatório")
+    @CPF(message = "CPF inválido")
     private String cpf;
+    @NotBlank(message = "O email é obrigatório")
+    @Email(message = "Email inválido")
     private String email;
+    @NotBlank(message = "Senha é obrigatória")
     private String senha;
-    private String celular;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
@@ -52,11 +60,4 @@ public class Usuario {
         this.senha = senha;
     }
 
-    public String getCelular() {
-        return celular;
-    }
-
-    public void setCelular(String celular) {
-        this.celular = celular;
-    }
 }

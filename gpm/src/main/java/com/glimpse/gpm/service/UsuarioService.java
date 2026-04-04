@@ -1,6 +1,8 @@
 package com.glimpse.gpm.service;
 
-import com.glimpse.gpm.model.Usuario;
+import com.glimpse.gpm.entity.Usuario;
+import com.glimpse.gpm.exception.DadosInvalidosException;
+import com.glimpse.gpm.exception.RecursoNaoEncontradoException;
 import com.glimpse.gpm.repository.UsuarioRepository;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
@@ -18,13 +20,10 @@ public class UsuarioService {
 
     public Usuario salvar(Usuario usuario) {
         if (usuario.getNome() == null || usuario.getNome().trim().isEmpty()) {
-            throw new IllegalArgumentException("O nome do usuário é obrigatório.");
+            throw new DadosInvalidosException("O nome do usuário é obrigatório.");
         }
         if (usuario.getCpf() == null || usuario.getCpf().trim().isEmpty()) {
-            throw new IllegalArgumentException("O CPF do usuário é obrigatório.");
-        }
-        if (repository.existsByCpf(usuario.getCpf())) {
-            throw new IllegalArgumentException("Já existe um usuário cadastrado com esse CPF.");
+            throw new DadosInvalidosException("O CPF do usuário é obrigatório.");
         }
 
         String senhaHash = org.mindrot.jbcrypt.BCrypt.hashpw(usuario.getSenha(), BCrypt.gensalt());
@@ -37,36 +36,47 @@ public class UsuarioService {
         return repository.findAll();
     }
 
-    public Optional<Usuario> buscarUsuarioPorId(Integer id) {
+    public Optional<Usuario> buscarUsuarioPorId(Long id) {
         return repository.findById(id);
     }
 
-    public Usuario atualizar(Integer id, Usuario usuarioAtualizado) {
+    public Usuario atualizar(Long id, Usuario usuarioAtualizado) {
         Optional<Usuario> usuarioEncontrado = repository.findById(id);
 
         if (usuarioEncontrado.isEmpty()) {
-            throw new IllegalArgumentException("Usuário não encontrado.");
+            throw new RecursoNaoEncontradoException("Usuário não encontrado.");
         }
 
         Usuario usuarioBanco = usuarioEncontrado.get();
 
-        if (!usuarioBanco.getCpf().equals(usuarioAtualizado.getCpf()) && repository.existsByCpf(usuarioAtualizado.getCpf())) {
-            throw new IllegalArgumentException("O novo CPF fornecido já está em uso por outro usuário.");
-        }
-
         usuarioBanco.setNome(usuarioAtualizado.getNome());
         usuarioBanco.setCpf(usuarioAtualizado.getCpf());
         usuarioBanco.setEmail(usuarioAtualizado.getEmail());
-        usuarioBanco.setCelular(usuarioAtualizado.getCelular());
 
         return repository.save(usuarioBanco);
     }
 
-    public boolean deletar(Integer id) {
+    public boolean deletar(Long id) {
         if (repository.existsById(id)) {
             repository.deleteById(id);
             return true;
         }
         return false;
+    }
+
+    public Usuario autenticar(String email, String senha) {
+        Optional<Usuario> usuarioEncontrado = repository.findByEmail(email);
+
+        if (usuarioEncontrado.isEmpty()) {
+            throw new DadosInvalidosException("Usuário não encontrado.");
+        }
+
+        Usuario usuario = usuarioEncontrado.get();
+
+        if (!BCrypt.checkpw(senha, usuario.getSenha())) {
+            throw new DadosInvalidosException("Senha inválida.");
+        }
+
+        return usuario;
     }
 }

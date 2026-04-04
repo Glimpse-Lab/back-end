@@ -1,24 +1,25 @@
-package com.glimpse.gpm.model;
+package com.glimpse.gpm.dto.produto;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-
-@Entity
-public class Produto {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
+public class ProdutoResponse {
+    private Long id;
     private String nome;
     private String descricao;
     private Double preco;
     private Integer quantidadeEstoque;
     private String categoria;
 
-    public Integer getId() {
+    public ProdutoResponse() {}
+
+    public ProdutoResponse(Long id, String nome, String descricao, Double preco, Integer quantidadeEstoque, String categoria) {
+        this.id = id;
+        this.nome = nome;
+        this.descricao = descricao;
+        this.preco = preco;
+        this.quantidadeEstoque = quantidadeEstoque;
+        this.categoria = categoria;
+    }
+
+    public Long getId() {
         return id;
     }
 

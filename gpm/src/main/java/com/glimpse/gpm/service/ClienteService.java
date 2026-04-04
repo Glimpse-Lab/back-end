@@ -1,6 +1,8 @@
 package com.glimpse.gpm.service;
 
-import com.glimpse.gpm.model.Cliente;
+import com.glimpse.gpm.entity.Cliente;
+import com.glimpse.gpm.exception.DadosInvalidosException;
+import com.glimpse.gpm.exception.RecursoNaoEncontradoException;
 import com.glimpse.gpm.repository.ClienteRepository;
 
 import java.util.List;
@@ -17,20 +19,20 @@ public class ClienteService {
 
     public Cliente salvar(Cliente cliente) {
         if (cliente.getNome() == null || cliente.getNome().trim().isEmpty()) {
-            throw new IllegalArgumentException("O nome não pode estar vazio.");
+            throw new DadosInvalidosException("O nome não pode estar vazio.");
         }
         if (cliente.getCpf() == null || cliente.getCpf().trim().isEmpty()) {
-            throw new IllegalArgumentException("O CPF não pode estar vazio.");
+            throw new DadosInvalidosException("O CPF não pode estar vazio.");
         }
         if (cliente.getCep() == null || cliente.getCep().trim().isEmpty()) {
-            throw new IllegalArgumentException("O CEP não pode estar vazio.");
+            throw new DadosInvalidosException("O CEP não pode estar vazio.");
         }
         if (cliente.getNumEndereco() == null || cliente.getNumEndereco() <= 0) {
-            throw new IllegalArgumentException("O número do endereço deve ser válido e maior que zero.");
+            throw new DadosInvalidosException("O número do endereço deve ser válido e maior que zero.");
         }
 
         if (repository.existsByCpf(cliente.getCpf())) {
-            throw new IllegalArgumentException("Já existe um cliente cadastrado com esse CPF.");
+            throw new DadosInvalidosException("Já existe um cliente cadastrado com esse CPF.");
         }
 
         return repository.save(cliente);
@@ -40,21 +42,21 @@ public class ClienteService {
         return repository.findAll();
     }
 
-    public Optional<Cliente> buscarClientePorid(Integer id) {
+    public Optional<Cliente> buscarClientePorid(Long id) {
         return repository.findById(id);
     }
 
-    public Cliente atualizar(Integer id, Cliente clienteAtualizado) {
+    public Cliente atualizar(Long id, Cliente clienteAtualizado) {
         Optional<Cliente> clienteEncontrado = repository.findById(id);
 
         if (clienteEncontrado.isEmpty()) {
-            throw new IllegalArgumentException("Cliente não encontrado.");
+            throw new RecursoNaoEncontradoException("Cliente não encontrado.");
         }
 
         Cliente clienteBanco = clienteEncontrado.get();
 
         if (!clienteBanco.getCpf().equals(clienteAtualizado.getCpf()) && repository.existsByCpf(clienteAtualizado.getCpf())) {
-            throw new IllegalArgumentException("O novo CPF fornecido já está em uso.");
+            throw new DadosInvalidosException("O novo CPF fornecido já está em uso.");
         }
 
         clienteBanco.setNome(clienteAtualizado.getNome());
@@ -66,7 +68,7 @@ public class ClienteService {
         return repository.save(clienteBanco);
     }
 
-    public boolean excluir(Integer id) {
+    public boolean excluir(Long id) {
         if (repository.existsById(id)) {
             repository.deleteById(id);
             return true;
