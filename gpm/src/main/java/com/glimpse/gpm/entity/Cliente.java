@@ -25,6 +25,30 @@ public class Cliente {
     private Integer numEndereco;
     @NotBlank(message = "Celular é obrigatório")
     private String celular;
+    @NotBlank(message = "E-mail não pode estar vazio")
+    private String email;
+
+    private Orcamento orcamentos;
+
+    public Orcamento getOrcamentos() {
+        return orcamentos;
+    }
+
+    public void setOrcamentos(Orcamento orcamentos) {
+        this.orcamentos = orcamentos;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
     public Long getId() {
         return id;

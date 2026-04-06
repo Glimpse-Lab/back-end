@@ -25,7 +25,26 @@ public class Produto {
     @Min(value = 0, message = "A quantidade em estoque deve ser maior ou igual a zero")
     private Integer quantidadeEstoque;
     @NotBlank(message = "A categoria do produto é obrigatório")
-    private String categoria;
+    private Categoria categoria;
+
+    private GaleriaPortfolio galerias;
+
+    public GaleriaPortfolio getGalerias() {
+        return galerias;
+    }
+
+    public void setGalerias(GaleriaPortfolio galerias) {
+        this.galerias = galerias;
+    }
+
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
 
     public Long getId() {
         return id;
