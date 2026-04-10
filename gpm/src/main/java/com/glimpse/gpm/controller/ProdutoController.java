@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -30,20 +31,27 @@ public class ProdutoController {
         produto.setDescricao(produtoRequest.getDescricao());
         produto.setPreco(produtoRequest.getPreco());
         produto.setQuantidadeEstoque(produtoRequest.getQuantidadeEstoque());
-        produto.setCategoria(produtoRequest.getCategoria());
 
         Produto produtoSalvo = service.salvar(produto);
         ProdutoResponse response = new ProdutoResponse(produtoSalvo.getId(), produtoSalvo.getNome(), produtoSalvo.getDescricao(),
-                                                       produtoSalvo.getPreco(), produtoSalvo.getQuantidadeEstoque(), produtoSalvo.getCategoria());
+                produtoSalvo.getPreco(), produtoSalvo.getQuantidadeEstoque());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping
     public ResponseEntity<List<ProdutoResponse>> listar() {
         List<Produto> produtos = service.listarProdutos();
+
         List<ProdutoResponse> responses = produtos.stream()
-            .map(p -> new ProdutoResponse(p.getId(), p.getNome(), p.getDescricao(), p.getPreco(), p.getQuantidadeEstoque(), p.getCategoria()))
-            .collect(Collectors.toList());
+                .map(produto -> new ProdutoResponse(
+                        produto.getId(),
+                        produto.getNome(),
+                        produto.getDescricao(),
+                        produto.getPreco(),
+                        produto.getQuantidadeEstoque()
+                ))
+                .toList();
+
         return ResponseEntity.ok(responses);
     }
 
@@ -53,7 +61,7 @@ public class ProdutoController {
 
         if (produtoEncontrado.isPresent()) {
             Produto p = produtoEncontrado.get();
-            ProdutoResponse response = new ProdutoResponse(p.getId(), p.getNome(), p.getDescricao(), p.getPreco(), p.getQuantidadeEstoque(), p.getCategoria());
+            ProdutoResponse response = new ProdutoResponse(p.getId(), p.getNome(), p.getDescricao(), p.getPreco(), p.getQuantidadeEstoque());
             return ResponseEntity.ok(response);
         } else {
             return ResponseEntity.notFound().build();
@@ -67,12 +75,11 @@ public class ProdutoController {
         produto.setDescricao(produtoRequest.getDescricao());
         produto.setPreco(produtoRequest.getPreco());
         produto.setQuantidadeEstoque(produtoRequest.getQuantidadeEstoque());
-        produto.setCategoria(produtoRequest.getCategoria());
 
         Produto produtoAtualizado = service.atualizar(id, produto);
         ProdutoResponse response = new ProdutoResponse(produtoAtualizado.getId(), produtoAtualizado.getNome(),
-                                                      produtoAtualizado.getDescricao(), produtoAtualizado.getPreco(),
-                                                      produtoAtualizado.getQuantidadeEstoque(), produtoAtualizado.getCategoria());
+                produtoAtualizado.getDescricao(), produtoAtualizado.getPreco(),
+                produtoAtualizado.getQuantidadeEstoque());
         return ResponseEntity.ok(response);
     }
 

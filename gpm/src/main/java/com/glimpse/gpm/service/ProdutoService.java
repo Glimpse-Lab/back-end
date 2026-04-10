@@ -60,7 +60,6 @@ public class ProdutoService {
         produtoBanco.setDescricao(produtoAtualizado.getDescricao());
         produtoBanco.setPreco(produtoAtualizado.getPreco());
         produtoBanco.setQuantidadeEstoque(produtoAtualizado.getQuantidadeEstoque());
-        produtoBanco.setCategoria(produtoAtualizado.getCategoria());
 
         return repository.save(produtoBanco);
     }

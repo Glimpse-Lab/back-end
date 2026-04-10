@@ -1,23 +1,24 @@
 package com.glimpse.gpm.dto.produto;
 
+import com.glimpse.gpm.entity.Produto;
+
 public class ProdutoResponse {
     private Long id;
     private String nome;
     private String descricao;
     private Double preco;
     private Integer quantidadeEstoque;
-    private String categoria;
 
     public ProdutoResponse() {}
 
-    public ProdutoResponse(Long id, String nome, String descricao, Double preco, Integer quantidadeEstoque, String categoria) {
+    public ProdutoResponse(Long id, String nome, String descricao, Double preco, Integer quantidadeEstoque) {
         this.id = id;
         this.nome = nome;
         this.descricao = descricao;
         this.preco = preco;
         this.quantidadeEstoque = quantidadeEstoque;
-        this.categoria = categoria;
     }
+
 
     public Long getId() {
         return id;
@@ -55,11 +56,4 @@ public class ProdutoResponse {
         this.quantidadeEstoque = quantidadeEstoque;
     }
 
-    public String getCategoria() {
-        return categoria;
-    }
-
-    public void setCategoria(String categoria) {
-        this.categoria = categoria;
-    }
 }
