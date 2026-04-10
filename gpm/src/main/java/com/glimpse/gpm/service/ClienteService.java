@@ -18,19 +18,6 @@ public class ClienteService {
     }
 
     public Cliente salvar(Cliente cliente) {
-        if (cliente.getNome() == null || cliente.getNome().trim().isEmpty()) {
-            throw new DadosInvalidosException("O nome não pode estar vazio.");
-        }
-        if (cliente.getCpf() == null || cliente.getCpf().trim().isEmpty()) {
-            throw new DadosInvalidosException("O CPF não pode estar vazio.");
-        }
-        if (cliente.getCep() == null || cliente.getCep().trim().isEmpty()) {
-            throw new DadosInvalidosException("O CEP não pode estar vazio.");
-        }
-        if (cliente.getNumEndereco() == null || cliente.getNumEndereco() <= 0) {
-            throw new DadosInvalidosException("O número do endereço deve ser válido e maior que zero.");
-        }
-
         if (repository.existsByCpf(cliente.getCpf())) {
             throw new DadosInvalidosException("Já existe um cliente cadastrado com esse CPF.");
         }

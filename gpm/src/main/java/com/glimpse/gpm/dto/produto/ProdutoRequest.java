@@ -19,18 +19,14 @@ public class ProdutoRequest {
     @NotNull(message = "A quantidade de estoque é obrigatória")
     @Min(value = 0, message = "A quantidade de estoque não pode ser negativa")
     private Integer quantidadeEstoque;
-    
-    @NotBlank(message = "A categoria é obrigatória")
-    private String categoria;
 
     public ProdutoRequest() {}
 
-    public ProdutoRequest(String nome, String descricao, Double preco, Integer quantidadeEstoque, String categoria) {
+    public ProdutoRequest(String nome, String descricao, Double preco, Integer quantidadeEstoque) {
         this.nome = nome;
         this.descricao = descricao;
         this.preco = preco;
         this.quantidadeEstoque = quantidadeEstoque;
-        this.categoria = categoria;
     }
 
     public String getNome() {
@@ -65,12 +61,5 @@ public class ProdutoRequest {
         this.quantidadeEstoque = quantidadeEstoque;
     }
 
-    public String getCategoria() {
-        return categoria;
-    }
-
-    public void setCategoria(String categoria) {
-        this.categoria = categoria;
-    }
 }
 

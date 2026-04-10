@@ -28,15 +28,6 @@ public class Cliente {
     @NotBlank(message = "E-mail não pode estar vazio")
     private String email;
 
-    private Orcamento orcamentos;
-
-    public Orcamento getOrcamentos() {
-        return orcamentos;
-    }
-
-    public void setOrcamentos(Orcamento orcamentos) {
-        this.orcamentos = orcamentos;
-    }
 
     public void setId(Long id) {
         this.id = id;
