@@ -2,14 +2,17 @@ package com.glimpse.gpm.controller;
 
 import com.glimpse.gpm.entity.Usuario;
 import com.glimpse.gpm.service.UsuarioService;
+import com.glimpse.gpm.service.TokenService;
 import com.glimpse.gpm.dto.usuario.UsuarioRequest;
 import com.glimpse.gpm.dto.usuario.UsuarioResponse;
 import com.glimpse.gpm.dto.usuario.LoginRequest;
 import com.glimpse.gpm.dto.usuario.LoginResponse;
 import com.glimpse.gpm.exception.RecursoNaoEncontradoException;
-import com.glimpse.gpm.exception.DadosInvalidosException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
@@ -21,9 +24,13 @@ import java.util.stream.Collectors;
 @RequestMapping("/usuarios")
 public class UsuarioController {
     private final UsuarioService service;
+    private final AuthenticationManager authenticationManager;
+    private final TokenService tokenService;
 
-    public UsuarioController(UsuarioService service) {
+    public UsuarioController(UsuarioService service, AuthenticationManager authenticationManager, TokenService tokenService) {
         this.service = service;
+        this.authenticationManager = authenticationManager;
+        this.tokenService = tokenService;
     }
 
     @PostMapping
@@ -92,16 +99,30 @@ public class UsuarioController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
         try {
-            Usuario usuarioAutenticado = service.autenticar(loginRequest.getEmail(), loginRequest.getSenha());
+            // 1. Cria o token de tentativa de login (Ainda não é o JWT)
+            var authenticationToken = new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getSenha());
+
+            // 2. O Spring bate no banco e confere se a senha bate com o hash BCrypt
+            var authentication = authenticationManager.authenticate(authenticationToken);
+
+            // 3. Deu certo! Pega o usuário logado
+            Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
+
+            // 4. Gera o Token JWT real
+            String tokenJWT = tokenService.gerarToken(usuarioLogado);
+
+            // 5. Monta a resposta enviando o TOKEN:
             LoginResponse response = new LoginResponse(
-                usuarioAutenticado.getId(),
-                usuarioAutenticado.getNome(),
-                usuarioAutenticado.getEmail(),
-                usuarioAutenticado.getCpf(),
-                "Login realizado com sucesso!"
+                    usuarioLogado.getId(),
+                    usuarioLogado.getNome(),
+                    usuarioLogado.getEmail(),
+                    usuarioLogado.getCpf(),
+                    tokenJWT
             );
             return ResponseEntity.ok(response);
-        } catch (DadosInvalidosException e) {
+
+        } catch (Exception e) {
+            // Se a senha estiver errada ou usuário não existir:
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
