@@ -26,7 +26,7 @@ public class UsuarioController {
         this.service = service;
     }
 
-    @PostMapping
+    @PostMapping("/cadastrar")
     public ResponseEntity<UsuarioResponse> criar(@Valid @RequestBody UsuarioRequest usuarioRequest) {
         Usuario usuario = new Usuario();
         usuario.setNome(usuarioRequest.getNome());
