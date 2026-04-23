@@ -33,7 +33,7 @@ public class UsuarioController {
         this.tokenService = tokenService;
     }
 
-    @PostMapping("/cadastrar")
+    @PostMapping
     public ResponseEntity<UsuarioResponse> criar(@Valid @RequestBody UsuarioRequest usuarioRequest) {
         Usuario usuario = new Usuario();
         usuario.setNome(usuarioRequest.getNome());

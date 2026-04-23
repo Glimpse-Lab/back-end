@@ -2,14 +2,12 @@ package com.glimpse.gpm.dto.usuario;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import org.hibernate.validator.constraints.br.CPF;
 
 public class UsuarioRequest {
     @NotBlank(message = "O nome é obrigatório")
     private String nome;
 
     @NotBlank(message = "CPF é obrigatório")
-    @CPF(message = "CPF inválido")
     private String cpf;
 
     @NotBlank(message = "Email é obrigatório")
