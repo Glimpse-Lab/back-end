@@ -4,7 +4,7 @@ import com.glimpse.gpm.entity.Usuario;
 import com.glimpse.gpm.exception.DadosInvalidosException;
 import com.glimpse.gpm.exception.RecursoNaoEncontradoException;
 import com.glimpse.gpm.repository.UsuarioRepository;
-import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,33 +13,55 @@ import java.util.Optional;
 @Service
 public class UsuarioService {
     private final UsuarioRepository repository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UsuarioService(UsuarioRepository repository) {
+    public UsuarioService(UsuarioRepository repository, PasswordEncoder passwordEncoder) {
         this.repository = repository;
+        this.passwordEncoder = passwordEncoder;
     }
 
+    /**
+     * Salva um novo usuário com a senha criptografada
+     * @param usuario Dados do usuário a ser salvo
+     * @return Usuário salvo
+     */
     public Usuario salvar(Usuario usuario) {
-        if (usuario.getNome() == null || usuario.getNome().trim().isEmpty()) {
-            throw new DadosInvalidosException("O nome do usuário é obrigatório.");
-        }
-        if (usuario.getCpf() == null || usuario.getCpf().trim().isEmpty()) {
-            throw new DadosInvalidosException("O CPF do usuário é obrigatório.");
+        validarDadosUsuario(usuario);
+        
+        if (repository.findByEmail(usuario.getEmail()).isPresent()) {
+            throw new DadosInvalidosException("Email já cadastrado.");
         }
 
-        String senhaHash = org.mindrot.jbcrypt.BCrypt.hashpw(usuario.getSenha(), BCrypt.gensalt());
+        // Criptografa a senha usando BCrypt
+        String senhaHash = passwordEncoder.encode(usuario.getSenha());
         usuario.setSenha(senhaHash);
 
         return repository.save(usuario);
     }
 
+    /**
+     * Lista todos os usuários
+     * @return Lista de usuários
+     */
     public List<Usuario> listarUsuarios() {
         return repository.findAll();
     }
 
+    /**
+     * Busca um usuário por ID
+     * @param id ID do usuário
+     * @return Optional contendo o usuário ou vazio
+     */
     public Optional<Usuario> buscarUsuarioPorId(Long id) {
         return repository.findById(id);
     }
 
+    /**
+     * Atualiza os dados de um usuário
+     * @param id ID do usuário
+     * @param usuarioAtualizado Dados atualizados
+     * @return Usuário atualizado
+     */
     public Usuario atualizar(Long id, Usuario usuarioAtualizado) {
         Optional<Usuario> usuarioEncontrado = repository.findById(id);
 
@@ -47,15 +69,27 @@ public class UsuarioService {
             throw new RecursoNaoEncontradoException("Usuário não encontrado.");
         }
 
+        validarDadosUsuario(usuarioAtualizado);
+
         Usuario usuarioBanco = usuarioEncontrado.get();
 
         usuarioBanco.setNome(usuarioAtualizado.getNome());
         usuarioBanco.setCpf(usuarioAtualizado.getCpf());
         usuarioBanco.setEmail(usuarioAtualizado.getEmail());
+        
+        // Se for atualizar a senha, criptografa
+        if (usuarioAtualizado.getSenha() != null && !usuarioAtualizado.getSenha().isEmpty()) {
+            usuarioBanco.setSenha(passwordEncoder.encode(usuarioAtualizado.getSenha()));
+        }
 
         return repository.save(usuarioBanco);
     }
 
+    /**
+     * Deleta um usuário
+     * @param id ID do usuário
+     * @return true se deletado, false caso contrário
+     */
     public boolean deletar(Long id) {
         if (repository.existsById(id)) {
             repository.deleteById(id);
@@ -64,19 +98,44 @@ public class UsuarioService {
         return false;
     }
 
+    /**
+     * Valida as credenciais de um usuário
+     * @param email Email do usuário
+     * @param senha Senha do usuário
+     * @return Usuário autenticado
+     */
     public Usuario autenticar(String email, String senha) {
         Optional<Usuario> usuarioEncontrado = repository.findByEmail(email);
 
         if (usuarioEncontrado.isEmpty()) {
-            throw new DadosInvalidosException("Usuário não encontrado.");
+            throw new DadosInvalidosException("Email ou senha inválidos.");
         }
 
         Usuario usuario = usuarioEncontrado.get();
 
-        if (!BCrypt.checkpw(senha, usuario.getSenha())) {
-            throw new DadosInvalidosException("Senha inválida.");
+        if (!passwordEncoder.matches(senha, usuario.getSenha())) {
+            throw new DadosInvalidosException("Email ou senha inválidos.");
         }
 
         return usuario;
+    }
+
+    /**
+     * Valida os dados básicos do usuário
+     * @param usuario Usuário a ser validado
+     */
+    private void validarDadosUsuario(Usuario usuario) {
+        if (usuario.getNome() == null || usuario.getNome().trim().isEmpty()) {
+            throw new DadosInvalidosException("O nome do usuário é obrigatório.");
+        }
+        if (usuario.getCpf() == null || usuario.getCpf().trim().isEmpty()) {
+            throw new DadosInvalidosException("O CPF do usuário é obrigatório.");
+        }
+        if (usuario.getEmail() == null || usuario.getEmail().trim().isEmpty()) {
+            throw new DadosInvalidosException("O email do usuário é obrigatório.");
+        }
+        if (usuario.getSenha() == null || usuario.getSenha().trim().isEmpty()) {
+            throw new DadosInvalidosException("A senha do usuário é obrigatória.");
+        }
     }
 }
