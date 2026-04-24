@@ -2,10 +2,7 @@ package com.glimpse.gpm.entity;
 
 import com.glimpse.gpm.enums.StatusOrcamento;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -15,38 +12,31 @@ public class Orcamento {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Nome do cliente é obrigatório")
-    private String nomeCliente;
+    @ManyToOne
+    @JoinColumn(name = "fk_cliente", nullable = false)
+    private Cliente cliente;
 
-    @NotBlank(message = "Email do cliente é obrigatório")
-    private String emailCliente;
+    @Column(nullable = false)
+    private LocalDateTime dataSolicitacao;
 
-    @NotBlank(message = "Telefone do cliente é obrigatório")
-    private String telefoneCliente;
-
-    @NotBlank(message = "Assunto é obrigatório")
-    private String assunto;
-
-    @NotBlank(message = "Descrição é obrigatória")
-    @Column(columnDefinition = "TEXT")
-    private String descricao;
-
-    @NotNull(message = "Status é obrigatório")
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private StatusOrcamento status;
 
-    private String valoresEstimados;
+    @Column(columnDefinition = "TEXT", nullable = false)
+    private String descricaoProjeto;
 
-    @NotNull(message = "Data de criação é obrigatória")
-    private LocalDateTime dataCriacao;
+    @Column(nullable = false, length = 9)
+    private String cep;
 
-    private LocalDateTime dataAtualizacao;
+    @Column(nullable = false)
+    private Integer numEndereco;
 
-    @ManyToOne
-    @JoinColumn(name = "usuario_id")
-    private Usuario usuarioCriador;
+    private String complemento;
+
 
     // Getters e Setters
+
     public Long getId() {
         return id;
     }
@@ -55,44 +45,20 @@ public class Orcamento {
         this.id = id;
     }
 
-    public String getNomeCliente() {
-        return nomeCliente;
+    public Cliente getCliente() {
+        return cliente;
     }
 
-    public void setNomeCliente(String nomeCliente) {
-        this.nomeCliente = nomeCliente;
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
     }
 
-    public String getEmailCliente() {
-        return emailCliente;
+    public LocalDateTime getDataSolicitacao() {
+        return dataSolicitacao;
     }
 
-    public void setEmailCliente(String emailCliente) {
-        this.emailCliente = emailCliente;
-    }
-
-    public String getTelefoneCliente() {
-        return telefoneCliente;
-    }
-
-    public void setTelefoneCliente(String telefoneCliente) {
-        this.telefoneCliente = telefoneCliente;
-    }
-
-    public String getAssunto() {
-        return assunto;
-    }
-
-    public void setAssunto(String assunto) {
-        this.assunto = assunto;
-    }
-
-    public String getDescricao() {
-        return descricao;
-    }
-
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
+    public void setDataSolicitacao(LocalDateTime dataSolicitacao) {
+        this.dataSolicitacao = dataSolicitacao;
     }
 
     public StatusOrcamento getStatus() {
@@ -103,35 +69,35 @@ public class Orcamento {
         this.status = status;
     }
 
-    public String getValoresEstimados() {
-        return valoresEstimados;
+    public String getDescricaoProjeto() {
+        return descricaoProjeto;
     }
 
-    public void setValoresEstimados(String valoresEstimados) {
-        this.valoresEstimados = valoresEstimados;
+    public void setDescricaoProjeto(String descricaoProjeto) {
+        this.descricaoProjeto = descricaoProjeto;
     }
 
-    public LocalDateTime getDataCriacao() {
-        return dataCriacao;
+    public String getCep() {
+        return cep;
     }
 
-    public void setDataCriacao(LocalDateTime dataCriacao) {
-        this.dataCriacao = dataCriacao;
+    public void setCep(String cep) {
+        this.cep = cep;
     }
 
-    public LocalDateTime getDataAtualizacao() {
-        return dataAtualizacao;
+    public Integer getNumEndereco() {
+        return numEndereco;
     }
 
-    public void setDataAtualizacao(LocalDateTime dataAtualizacao) {
-        this.dataAtualizacao = dataAtualizacao;
+    public void setNumEndereco(Integer numEndereco) {
+        this.numEndereco = numEndereco;
     }
 
-    public Usuario getUsuarioCriador() {
-        return usuarioCriador;
+    public String getComplemento() {
+        return complemento;
     }
 
-    public void setUsuarioCriador(Usuario usuarioCriador) {
-        this.usuarioCriador = usuarioCriador;
+    public void setComplemento(String complemento) {
+        this.complemento = complemento;
     }
 }
