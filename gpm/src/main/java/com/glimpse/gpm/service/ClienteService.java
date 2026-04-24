@@ -1,58 +1,63 @@
 package com.glimpse.gpm.service;
 
+import com.glimpse.gpm.dto.cliente.ClienteRequest;
+import com.glimpse.gpm.dto.cliente.ClienteResponse;
 import com.glimpse.gpm.entity.Cliente;
 import com.glimpse.gpm.exception.DadosInvalidosException;
 import com.glimpse.gpm.exception.RecursoNaoEncontradoException;
 import com.glimpse.gpm.repository.ClienteRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
-import org.springframework.stereotype.Service;
+import java.util.stream.Collectors;
 
 @Service
 public class ClienteService {
+
     private final ClienteRepository repository;
 
     public ClienteService(ClienteRepository repository) {
         this.repository = repository;
     }
 
-    public Cliente salvar(Cliente cliente) {
-        if (repository.existsByCpf(cliente.getCpf())) {
-            throw new DadosInvalidosException("Já existe um cliente cadastrado com esse CPF.");
+    public ClienteResponse salvar(ClienteRequest request) {
+        if (repository.existsByEmail(request.getEmail())) {
+            throw new DadosInvalidosException("Já existe um cliente cadastrado com esse e-mail.");
         }
 
-        return repository.save(cliente);
+        Cliente cliente = new Cliente();
+        cliente.setNome(request.getNome());
+        cliente.setCelular(request.getCelular());
+        cliente.setEmail(request.getEmail());
+
+        return mapearParaResponse(repository.save(cliente));
     }
 
-    public List<Cliente> listarClientes() {
-        return repository.findAll();
+    public List<ClienteResponse> listarClientes() {
+        return repository.findAll().stream()
+                .map(this::mapearParaResponse)
+                .collect(Collectors.toList());
     }
 
-    public Optional<Cliente> buscarClientePorid(Long id) {
-        return repository.findById(id);
+    public ClienteResponse buscarClientePorId(Long id) {
+        Cliente cliente = repository.findById(id)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Cliente não encontrado."));
+        return mapearParaResponse(cliente);
     }
 
-    public Cliente atualizar(Long id, Cliente clienteAtualizado) {
-        Optional<Cliente> clienteEncontrado = repository.findById(id);
+    public ClienteResponse atualizar(Long id, ClienteRequest request) {
+        Cliente clienteBanco = repository.findById(id)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Cliente não encontrado."));
 
-        if (clienteEncontrado.isEmpty()) {
-            throw new RecursoNaoEncontradoException("Cliente não encontrado.");
+        if (!clienteBanco.getEmail().equals(request.getEmail()) && repository.existsByEmail(request.getEmail())) {
+            throw new DadosInvalidosException("O novo e-mail fornecido já está em uso.");
         }
 
-        Cliente clienteBanco = clienteEncontrado.get();
+        clienteBanco.setNome(request.getNome());
+        clienteBanco.setCelular(request.getCelular());
+        clienteBanco.setEmail(request.getEmail());
 
-        if (!clienteBanco.getCpf().equals(clienteAtualizado.getCpf()) && repository.existsByCpf(clienteAtualizado.getCpf())) {
-            throw new DadosInvalidosException("O novo CPF fornecido já está em uso.");
-        }
-
-        clienteBanco.setNome(clienteAtualizado.getNome());
-        clienteBanco.setCpf(clienteAtualizado.getCpf());
-        clienteBanco.setCep(clienteAtualizado.getCep());
-        clienteBanco.setNumEndereco(clienteAtualizado.getNumEndereco());
-        clienteBanco.setCelular(clienteAtualizado.getCelular());
-
-        return repository.save(clienteBanco);
+        return mapearParaResponse(repository.save(clienteBanco));
     }
 
     public boolean excluir(Long id) {
@@ -61,5 +66,15 @@ public class ClienteService {
             return true;
         }
         return false;
+    }
+
+    // Metodo auxiliar de conversão
+    private ClienteResponse mapearParaResponse(Cliente cliente) {
+        return new ClienteResponse(
+                cliente.getId(),
+                cliente.getNome(),
+                cliente.getCelular(),
+                cliente.getEmail()
+        );
     }
 }
