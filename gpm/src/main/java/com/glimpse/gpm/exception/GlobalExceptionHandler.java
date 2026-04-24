@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -85,6 +87,23 @@ public class GlobalExceptionHandler {
         resposta.put("timestamp", LocalDateTime.now());
         resposta.put("status", HttpStatus.UNAUTHORIZED.value());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(resposta);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        Map<String, Object> resposta = new HashMap<>();
+        resposta.put("erro", "Erro de validação");
+
+        Map<String, String> errosDeValidacao = new HashMap<>();
+        for (FieldError erro : ex.getBindingResult().getFieldErrors()) {
+            errosDeValidacao.put(erro.getField(), erro.getDefaultMessage());
+        }
+
+        resposta.put("mensagem", errosDeValidacao);
+        resposta.put("timestamp", LocalDateTime.now());
+        resposta.put("status", HttpStatus.BAD_REQUEST.value());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resposta);
     }
 
     @ExceptionHandler(Exception.class)
