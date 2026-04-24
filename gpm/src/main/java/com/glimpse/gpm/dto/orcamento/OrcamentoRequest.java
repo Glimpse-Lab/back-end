@@ -1,85 +1,40 @@
 package com.glimpse.gpm.dto.orcamento;
 
-import com.glimpse.gpm.enums.StatusOrcamento;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 
 public class OrcamentoRequest {
 
-    @NotBlank(message = "Nome do cliente é obrigatório")
-    private String nomeCliente;
+    @NotNull(message = "O ID do cliente é obrigatório para vincular o orçamento")
+    private Long clienteId;
 
-    @NotBlank(message = "Email do cliente é obrigatório")
-    private String emailCliente;
+    @NotBlank(message = "A descrição do projeto é obrigatória")
+    private String descricaoProjeto;
 
-    @NotBlank(message = "Telefone do cliente é obrigatório")
-    private String telefoneCliente;
+    @NotBlank(message = "O CEP é obrigatório")
+    @Pattern(regexp = "\\d{5}-\\d{3}", message = "O CEP deve estar no formato 12345-678")
+    private String cep;
 
-    @NotBlank(message = "Assunto é obrigatório")
-    private String assunto;
+    @NotNull(message = "O número do endereço é obrigatório")
+    private Integer numEndereco;
 
-    @NotBlank(message = "Descrição é obrigatória")
-    private String descricao;
+    private String complemento;
 
-    @NotNull(message = "Status é obrigatório")
-    private StatusOrcamento status;
+    public OrcamentoRequest() {}
 
-    private String valoresEstimados;
+    public Long getClienteId() { return clienteId; }
+    public void setClienteId(Long clienteId) { this.clienteId = clienteId; }
 
-    // Getters e Setters
-    public String getNomeCliente() {
-        return nomeCliente;
-    }
+    public String getDescricaoProjeto() { return descricaoProjeto; }
+    public void setDescricaoProjeto(String descricaoProjeto) { this.descricaoProjeto = descricaoProjeto; }
 
-    public void setNomeCliente(String nomeCliente) {
-        this.nomeCliente = nomeCliente;
-    }
+    public String getCep() { return cep; }
+    public void setCep(String cep) { this.cep = cep; }
 
-    public String getEmailCliente() {
-        return emailCliente;
-    }
+    public Integer getNumEndereco() { return numEndereco; }
+    public void setNumEndereco(Integer numEndereco) { this.numEndereco = numEndereco; }
 
-    public void setEmailCliente(String emailCliente) {
-        this.emailCliente = emailCliente;
-    }
-
-    public String getTelefoneCliente() {
-        return telefoneCliente;
-    }
-
-    public void setTelefoneCliente(String telefoneCliente) {
-        this.telefoneCliente = telefoneCliente;
-    }
-
-    public String getAssunto() {
-        return assunto;
-    }
-
-    public void setAssunto(String assunto) {
-        this.assunto = assunto;
-    }
-
-    public String getDescricao() {
-        return descricao;
-    }
-
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
-    }
-
-    public StatusOrcamento getStatus() {
-        return status;
-    }
-
-    public void setStatus(StatusOrcamento status) {
-        this.status = status;
-    }
-
-    public String getValoresEstimados() {
-        return valoresEstimados;
-    }
-
-    public void setValoresEstimados(String valoresEstimados) {
-        this.valoresEstimados = valoresEstimados;
-    }
+    public String getComplemento() { return complemento; }
+    public void setComplemento(String complemento) { this.complemento = complemento; }
 }

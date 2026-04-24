@@ -1,118 +1,56 @@
 package com.glimpse.gpm.dto.orcamento;
 
+import com.glimpse.gpm.dto.cliente.ClienteResponse;
 import com.glimpse.gpm.enums.StatusOrcamento;
-
 import java.time.LocalDateTime;
 
 public class OrcamentoResponse {
 
     private Long id;
-    private String nomeCliente;
-    private String emailCliente;
-    private String telefoneCliente;
-    private String assunto;
-    private String descricao;
+    private ClienteResponse cliente;
+    private String descricaoProjeto;
+    private String cep;
+    private Integer numEndereco;
+    private String complemento;
     private StatusOrcamento status;
-    private String valoresEstimados;
-    private LocalDateTime dataCriacao;
-    private LocalDateTime dataAtualizacao;
+    private LocalDateTime dataSolicitacao;
 
-    public OrcamentoResponse() {
-    }
+    public OrcamentoResponse() {}
 
-    public OrcamentoResponse(Long id, String nomeCliente, String emailCliente, String telefoneCliente,
-                             String assunto, String descricao, StatusOrcamento status,
-                             String valoresEstimados, LocalDateTime dataCriacao, LocalDateTime dataAtualizacao) {
+    public OrcamentoResponse(Long id, ClienteResponse cliente, String descricaoProjeto, String cep,
+                             Integer numEndereco, String complemento, StatusOrcamento status,
+                             LocalDateTime dataSolicitacao) {
         this.id = id;
-        this.nomeCliente = nomeCliente;
-        this.emailCliente = emailCliente;
-        this.telefoneCliente = telefoneCliente;
-        this.assunto = assunto;
-        this.descricao = descricao;
+        this.cliente = cliente;
+        this.descricaoProjeto = descricaoProjeto;
+        this.cep = cep;
+        this.numEndereco = numEndereco;
+        this.complemento = complemento;
         this.status = status;
-        this.valoresEstimados = valoresEstimados;
-        this.dataCriacao = dataCriacao;
-        this.dataAtualizacao = dataAtualizacao;
+        this.dataSolicitacao = dataSolicitacao;
     }
 
-    // Getters e Setters
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public ClienteResponse getCliente() { return cliente; }
+    public void setCliente(ClienteResponse cliente) { this.cliente = cliente; }
 
-    public String getNomeCliente() {
-        return nomeCliente;
-    }
+    public String getDescricaoProjeto() { return descricaoProjeto; }
+    public void setDescricaoProjeto(String descricaoProjeto) { this.descricaoProjeto = descricaoProjeto; }
 
-    public void setNomeCliente(String nomeCliente) {
-        this.nomeCliente = nomeCliente;
-    }
+    public String getCep() { return cep; }
+    public void setCep(String cep) { this.cep = cep; }
 
-    public String getEmailCliente() {
-        return emailCliente;
-    }
+    public Integer getNumEndereco() { return numEndereco; }
+    public void setNumEndereco(Integer numEndereco) { this.numEndereco = numEndereco; }
 
-    public void setEmailCliente(String emailCliente) {
-        this.emailCliente = emailCliente;
-    }
+    public String getComplemento() { return complemento; }
+    public void setComplemento(String complemento) { this.complemento = complemento; }
 
-    public String getTelefoneCliente() {
-        return telefoneCliente;
-    }
+    public StatusOrcamento getStatus() { return status; }
+    public void setStatus(StatusOrcamento status) { this.status = status; }
 
-    public void setTelefoneCliente(String telefoneCliente) {
-        this.telefoneCliente = telefoneCliente;
-    }
-
-    public String getAssunto() {
-        return assunto;
-    }
-
-    public void setAssunto(String assunto) {
-        this.assunto = assunto;
-    }
-
-    public String getDescricao() {
-        return descricao;
-    }
-
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
-    }
-
-    public StatusOrcamento getStatus() {
-        return status;
-    }
-
-    public void setStatus(StatusOrcamento status) {
-        this.status = status;
-    }
-
-    public String getValoresEstimados() {
-        return valoresEstimados;
-    }
-
-    public void setValoresEstimados(String valoresEstimados) {
-        this.valoresEstimados = valoresEstimados;
-    }
-
-    public LocalDateTime getDataCriacao() {
-        return dataCriacao;
-    }
-
-    public void setDataCriacao(LocalDateTime dataCriacao) {
-        this.dataCriacao = dataCriacao;
-    }
-
-    public LocalDateTime getDataAtualizacao() {
-        return dataAtualizacao;
-    }
-
-    public void setDataAtualizacao(LocalDateTime dataAtualizacao) {
-        this.dataAtualizacao = dataAtualizacao;
-    }
+    public LocalDateTime getDataSolicitacao() { return dataSolicitacao; }
+    public void setDataSolicitacao(LocalDateTime dataSolicitacao) { this.dataSolicitacao = dataSolicitacao; }
 }
