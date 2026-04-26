@@ -1,5 +1,6 @@
 package com.glimpse.gpm.controller;
 
+import com.glimpse.gpm.config.ApiErrorResponses;
 import com.glimpse.gpm.entity.Usuario;
 import com.glimpse.gpm.service.UsuarioService;
 import com.glimpse.gpm.service.TokenService;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 @Tag(name = "Usuários e Autenticação", description = "Gestão de credenciais de acesso e endpoint de login do sistema")
 @RestController
 @RequestMapping("/usuarios")
+@ApiErrorResponses
 public class UsuarioController {
     private final UsuarioService service;
     private final AuthenticationManager authenticationManager;

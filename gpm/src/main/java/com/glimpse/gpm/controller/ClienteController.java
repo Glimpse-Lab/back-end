@@ -1,5 +1,6 @@
 package com.glimpse.gpm.controller;
 
+import com.glimpse.gpm.config.ApiErrorResponses;
 import com.glimpse.gpm.dto.cliente.ClienteRequest;
 import com.glimpse.gpm.dto.cliente.ClienteResponse;
 import com.glimpse.gpm.service.ClienteService;
@@ -15,6 +16,7 @@ import java.util.List;
 @Tag(name = "Clientes", description = "Gestão de clientes da GPM Esquadrias")
 @RestController
 @RequestMapping("/clientes")
+@ApiErrorResponses
 public class ClienteController {
 
     private final ClienteService service;

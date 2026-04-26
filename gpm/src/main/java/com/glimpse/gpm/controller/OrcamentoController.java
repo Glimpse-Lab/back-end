@@ -1,5 +1,6 @@
 package com.glimpse.gpm.controller;
 
+import com.glimpse.gpm.config.ApiErrorResponses;
 import com.glimpse.gpm.dto.orcamento.OrcamentoRequest;
 import com.glimpse.gpm.dto.orcamento.OrcamentoResponse;
 import com.glimpse.gpm.service.OrcamentoService;
@@ -15,6 +16,7 @@ import java.util.List;
 @Tag(name = "Orçamentos", description = "Gestão de orçamentos e projetos da GPM Esquadrias")
 @RestController
 @RequestMapping("/orcamentos")
+@ApiErrorResponses
 public class OrcamentoController {
 
     private final OrcamentoService service;

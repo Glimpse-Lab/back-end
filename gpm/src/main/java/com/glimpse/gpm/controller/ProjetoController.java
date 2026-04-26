@@ -1,5 +1,6 @@
 package com.glimpse.gpm.controller;
 
+import com.glimpse.gpm.config.ApiErrorResponses;
 import com.glimpse.gpm.entity.GaleriaPortfolio;
 import com.glimpse.gpm.service.ProjetoService;
 import com.glimpse.gpm.dto.projeto.ProjetoRequest;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 @Tag(name = "Portfólio de Projetos", description = "Gestão da galeria de projetos e portfólio da GPM Esquadrias")
 @RestController
 @RequestMapping("/projetos")
+@ApiErrorResponses
 public class ProjetoController {
 
     private final ProjetoService service;

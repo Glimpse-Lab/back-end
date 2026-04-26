@@ -1,5 +1,6 @@
 package com.glimpse.gpm.controller;
 
+import com.glimpse.gpm.config.ApiErrorResponses;
 import com.glimpse.gpm.entity.Produto;
 import com.glimpse.gpm.service.ProdutoService;
 import com.glimpse.gpm.dto.produto.ProdutoRequest;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 @Tag(name = "Produtos", description = "Gestão de estoque e catálogo de produtos da GPM Esquadrias")
 @RestController
 @RequestMapping("/produtos")
+@ApiErrorResponses
 public class ProdutoController {
 
     private final ProdutoService service;
