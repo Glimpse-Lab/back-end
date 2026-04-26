@@ -1,19 +1,26 @@
 package com.glimpse.gpm.dto.usuario;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
+@Schema(description = "Objeto de requisição para cadastro e atualização de usuários administrativos")
 public class UsuarioRequest {
+
+    @Schema(description = "Nome completo do usuário", example = "Administrador GPM")
     @NotBlank(message = "O nome é obrigatório")
     private String nome;
 
+    @Schema(description = "CPF do usuário (apenas números)", example = "12345678900")
     @NotBlank(message = "CPF é obrigatório")
     private String cpf;
 
+    @Schema(description = "E-mail de acesso ao painel", example = "admin@gpmesquadrias.com.br")
     @NotBlank(message = "Email é obrigatório")
     @Email(message = "Email inválido")
     private String email;
 
+    @Schema(description = "Senha para login no sistema", example = "SenhaForte123!")
     @NotBlank(message = "Senha é obrigatória")
     private String senha;
 

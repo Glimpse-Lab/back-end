@@ -1,25 +1,45 @@
 package com.glimpse.gpm.dto.projeto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.time.LocalDateTime;
 
+@Schema(description = "Objeto de resposta com os dados do projeto da galeria")
 public class ProjetoResponse {
 
+    @Schema(description = "ID do projeto na galeria", example = "1")
     private Long id;
+
+    @Schema(description = "Título de exibição do projeto", example = "Fachada em Pele de Vidro")
     private String titulo;
+
+    @Schema(description = "Descrição dos materiais e do trabalho realizado", example = "Instalação de fachada completa com vidro refletivo prata e estrutura de alumínio na linha Gold.")
     private String descricao;
+
+    @Schema(description = "Local onde o projeto foi executado", example = "Edifício Comercial, São Paulo - SP")
     private String localizacao;
+
+    @Schema(description = "Lista de URLs das fotos do projeto", example = "https://site.com/img1.jpg, https://site.com/img2.jpg")
     private String imagensUrls;
+
+    @Schema(description = "Categoria para filtro na galeria", example = "Fachadas")
     private String categoria;
+
+    @Schema(description = "Data em que o projeto foi executado", example = "2026-03-15T00:00:00")
     private LocalDateTime dataProjeto;
+
+    @Schema(description = "Data do cadastro do projeto no sistema", example = "2026-04-26T14:30:00")
     private LocalDateTime dataCriacao;
+
+    @Schema(description = "Data da última edição deste registro", example = "2026-04-26T16:45:00")
     private LocalDateTime dataAtualizacao;
 
     public ProjetoResponse() {
     }
 
     public ProjetoResponse(Long id, String titulo, String descricao, String localizacao,
-                          String imagensUrls, String categoria, LocalDateTime dataProjeto,
-                          LocalDateTime dataCriacao, LocalDateTime dataAtualizacao) {
+                           String imagensUrls, String categoria, LocalDateTime dataProjeto,
+                           LocalDateTime dataCriacao, LocalDateTime dataAtualizacao) {
         this.id = id;
         this.titulo = titulo;
         this.descricao = descricao;
