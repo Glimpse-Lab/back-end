@@ -1,13 +1,18 @@
 package com.glimpse.gpm.dto.usuario;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
+@Schema(description = "Objeto de requisição para autenticação de usuário no painel")
 public class LoginRequest {
+
+    @Schema(description = "E-mail de acesso do administrador ou funcionário", example = "admin@gpmesquadrias.com.br")
     @NotBlank(message = "Email é obrigatório")
     @Email(message = "Email inválido")
     private String email;
 
+    @Schema(description = "Senha de acesso corporativa", example = "SenhaForte123!")
     @NotBlank(message = "Senha é obrigatória")
     private String senha;
 
@@ -34,4 +39,3 @@ public class LoginRequest {
         this.senha = senha;
     }
 }
-

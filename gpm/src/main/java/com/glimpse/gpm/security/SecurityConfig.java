@@ -42,6 +42,7 @@ public class SecurityConfig {
                     req.requestMatchers(HttpMethod.POST, "/clientes").permitAll();
                     req.requestMatchers(HttpMethod.POST, "/orcamentos").permitAll();
                     req.requestMatchers(HttpMethod.GET, "/h2-console/**").permitAll();
+                    req.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll();
                     req.anyRequest().authenticated();
                 })
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))

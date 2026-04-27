@@ -1,9 +1,20 @@
 package com.glimpse.gpm.dto.usuario;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Objeto de resposta com os dados de um usuário cadastrado (omite a senha por segurança)")
 public class UsuarioResponse {
+
+    @Schema(description = "ID do usuário no banco de dados", example = "1")
     private Long id;
+
+    @Schema(description = "Nome completo do usuário", example = "Administrador GPM")
     private String nome;
+
+    @Schema(description = "CPF do usuário", example = "12345678900")
     private String cpf;
+
+    @Schema(description = "E-mail de acesso", example = "admin@gpmesquadrias.com.br")
     private String email;
 
     public UsuarioResponse() {}

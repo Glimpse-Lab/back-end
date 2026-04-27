@@ -1,9 +1,20 @@
 package com.glimpse.gpm.dto.cliente;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Objeto de resposta com os dados do cliente cadastrado")
 public class ClienteResponse {
+
+    @Schema(description = "ID do cliente gerado no banco de dados", example = "1")
     private Long id;
+
+    @Schema(description = "Nome completo do cliente", example = "Vanessa da Silva")
     private String nome;
+
+    @Schema(description = "Telefone celular com DDD", example = "11999998888")
     private String celular;
+
+    @Schema(description = "E-mail de contato", example = "vanessa@exemplo.com")
     private String email;
 
     public ClienteResponse() {}

@@ -1,12 +1,23 @@
 package com.glimpse.gpm.dto.produto;
 
-import com.glimpse.gpm.entity.Produto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Objeto de resposta com os dados do produto cadastrado")
 public class ProdutoResponse {
+
+    @Schema(description = "ID do produto gerado no banco de dados", example = "1")
     private Long id;
+
+    @Schema(description = "Nome do produto ou material", example = "Janela de Vidro Temperado")
     private String nome;
+
+    @Schema(description = "Descrição detalhada do produto", example = "Janela blindex 10mm com esquadria de alumínio preto (1,50m x 1,20m)")
     private String descricao;
+
+    @Schema(description = "Preço unitário do produto", example = "1250.50")
     private Double preco;
+
+    @Schema(description = "Quantidade disponível em estoque", example = "15")
     private Integer quantidadeEstoque;
 
     public ProdutoResponse() {}
@@ -18,7 +29,6 @@ public class ProdutoResponse {
         this.preco = preco;
         this.quantidadeEstoque = quantidadeEstoque;
     }
-
 
     public Long getId() {
         return id;
@@ -55,5 +65,4 @@ public class ProdutoResponse {
     public void setQuantidadeEstoque(Integer quantidadeEstoque) {
         this.quantidadeEstoque = quantidadeEstoque;
     }
-
 }

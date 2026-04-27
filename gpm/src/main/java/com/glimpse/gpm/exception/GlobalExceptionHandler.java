@@ -108,6 +108,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
+        //Apesar de mostrar o erro genérico para quem faz a request, ele loga o erro no console para o dev
+        ex.printStackTrace();;
+
         Map<String, Object> resposta = new HashMap<>();
         resposta.put("erro", "Erro interno do servidor");
         resposta.put("mensagem", ex.getMessage());
