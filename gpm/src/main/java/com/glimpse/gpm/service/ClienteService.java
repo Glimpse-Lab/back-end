@@ -1,15 +1,18 @@
 package com.glimpse.gpm.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
 import com.glimpse.gpm.dto.cliente.ClienteRequest;
 import com.glimpse.gpm.dto.cliente.ClienteResponse;
+import com.glimpse.gpm.dto.cliente.ClienteValidacaoRequest;
+import com.glimpse.gpm.dto.cliente.ClienteValidacaoResponse;
 import com.glimpse.gpm.entity.Cliente;
 import com.glimpse.gpm.exception.DadosInvalidosException;
 import com.glimpse.gpm.exception.RecursoNaoEncontradoException;
 import com.glimpse.gpm.repository.ClienteRepository;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ClienteService {
@@ -66,6 +69,17 @@ public class ClienteService {
             return true;
         }
         return false;
+    }
+
+    public ClienteValidacaoResponse validarClienteDuplicado(ClienteValidacaoRequest request) {
+        var clienteOptional = repository.findByEmailOrCelular(request.getEmail(), request.getCelular());
+        
+        if (clienteOptional.isPresent()) {
+            ClienteResponse clienteResponse = mapearParaResponse(clienteOptional.get());
+            return ClienteValidacaoResponse.clienteEncontrado(clienteResponse);
+        }
+        
+        return ClienteValidacaoResponse.clienteNaoEncontrado();
     }
 
     // Metodo auxiliar de conversão

@@ -1,19 +1,22 @@
 package com.glimpse.gpm.service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
 import com.glimpse.gpm.dto.cliente.ClienteResponse;
+import com.glimpse.gpm.dto.orcamento.OrcamentoComClienteRequest;
 import com.glimpse.gpm.dto.orcamento.OrcamentoRequest;
 import com.glimpse.gpm.dto.orcamento.OrcamentoResponse;
 import com.glimpse.gpm.entity.Cliente;
 import com.glimpse.gpm.entity.Orcamento;
 import com.glimpse.gpm.enums.StatusOrcamento;
+import com.glimpse.gpm.exception.DadosInvalidosException;
 import com.glimpse.gpm.exception.RecursoNaoEncontradoException;
 import com.glimpse.gpm.repository.ClienteRepository;
 import com.glimpse.gpm.repository.OrcamentoRepository;
-import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class OrcamentoService {
@@ -83,6 +86,48 @@ public class OrcamentoService {
             return true;
         }
         return false;
+    }
+
+    public OrcamentoResponse salvarComCliente(OrcamentoComClienteRequest request) {
+        Cliente cliente;
+
+        if (request.temClienteId()) {
+            // Usar cliente existente
+            cliente = clienteRepository.findById(request.getClienteId())
+                    .orElseThrow(() -> new RecursoNaoEncontradoException("Cliente não encontrado para o ID informado."));
+        } else if (request.temDadosCliente()) {
+            // Verificar se cliente com email/celular já existe
+            var clienteExistente = clienteRepository.findByEmailOrCelular(
+                request.getEmailCliente(),
+                request.getCelularCliente()
+            );
+
+            if (clienteExistente.isPresent()) {
+                // Cliente já existe, usar o existente
+                cliente = clienteExistente.get();
+            } else {
+                // Criar novo cliente
+                cliente = new Cliente();
+                cliente.setNome(request.getNomeCliente());
+                cliente.setEmail(request.getEmailCliente());
+                cliente.setCelular(request.getCelularCliente());
+                cliente = clienteRepository.save(cliente);
+            }
+        } else {
+            throw new DadosInvalidosException("É necessário fornecer clienteId OU dados do cliente (nome, email, celular).");
+        }
+
+        // Criar o orçamento com o cliente (novo ou existente)
+        Orcamento orcamento = new Orcamento();
+        orcamento.setCliente(cliente);
+        orcamento.setDescricaoProjeto(request.getDescricaoProjeto());
+        orcamento.setCep(request.getCep());
+        orcamento.setNumEndereco(request.getNumEndereco());
+        orcamento.setComplemento(request.getComplemento());
+        orcamento.setDataSolicitacao(LocalDateTime.now());
+        orcamento.setStatus(StatusOrcamento.PENDENTE);
+
+        return mapearParaResponse(orcamentoRepository.save(orcamento));
     }
 
     // Metodo auxiliar de conversão (aninhando o ClienteResponse)

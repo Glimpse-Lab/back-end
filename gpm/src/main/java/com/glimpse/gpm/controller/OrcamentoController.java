@@ -1,17 +1,27 @@
 package com.glimpse.gpm.controller;
 
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.glimpse.gpm.config.ApiErrorResponses;
+import com.glimpse.gpm.dto.orcamento.OrcamentoComClienteRequest;
 import com.glimpse.gpm.dto.orcamento.OrcamentoRequest;
 import com.glimpse.gpm.dto.orcamento.OrcamentoResponse;
 import com.glimpse.gpm.service.OrcamentoService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
-
-import java.util.List;
 
 @Tag(name = "Orçamentos", description = "Gestão de orçamentos e projetos da GPM Esquadrias")
 @RestController
@@ -29,6 +39,12 @@ public class OrcamentoController {
     @PostMapping
     public ResponseEntity<OrcamentoResponse> criar(@Valid @RequestBody OrcamentoRequest orcamentoRequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.salvar(orcamentoRequest));
+    }
+
+    @Operation(summary = "Criar orçamento com dados do cliente", description = "Rota pública. Cria um orçamento validando se o cliente já existe. Se não existir, cria um novo cliente automaticamente.")
+    @PostMapping("/com-cliente")
+    public ResponseEntity<OrcamentoResponse> criarComCliente(@Valid @RequestBody OrcamentoComClienteRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.salvarComCliente(request));
     }
 
     @Operation(summary = "Listar todos os orçamentos", description = "Requer autenticação JWT. Retorna uma lista com todos os orçamentos cadastrados.")

@@ -1,5 +1,7 @@
 package com.glimpse.gpm.security;
 
+import java.util.Arrays;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -17,8 +19,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -40,7 +40,9 @@ public class SecurityConfig {
                     req.requestMatchers(HttpMethod.POST, "/usuarios").permitAll();
                     req.requestMatchers(HttpMethod.POST, "/usuarios/login").permitAll();
                     req.requestMatchers(HttpMethod.POST, "/clientes").permitAll();
+                    req.requestMatchers(HttpMethod.POST, "/clientes/validar").permitAll();
                     req.requestMatchers(HttpMethod.POST, "/orcamentos").permitAll();
+                    req.requestMatchers(HttpMethod.POST, "/orcamentos/com-cliente").permitAll();
                     req.requestMatchers(HttpMethod.GET, "/h2-console/**").permitAll();
                     req.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll();
                     req.anyRequest().authenticated();
