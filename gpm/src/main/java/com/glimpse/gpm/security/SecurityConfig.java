@@ -45,6 +45,8 @@ public class SecurityConfig {
                     req.requestMatchers(HttpMethod.POST, "/orcamentos/com-cliente").permitAll();
                     req.requestMatchers(HttpMethod.GET, "/h2-console/**").permitAll();
                     req.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll();
+                    req.requestMatchers(HttpMethod.POST, "/usuarios/esqueci-senha").permitAll();
+                    req.requestMatchers(HttpMethod.POST, "/usuarios/redefinir-senha").permitAll();
                     req.anyRequest().authenticated();
                 })
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
