@@ -1,13 +1,11 @@
 package com.glimpse.gpm.controller;
 
 import com.glimpse.gpm.config.ApiErrorResponses;
+import com.glimpse.gpm.dto.usuario.*;
 import com.glimpse.gpm.entity.Usuario;
+import com.glimpse.gpm.service.AutenticacaoService;
 import com.glimpse.gpm.service.UsuarioService;
 import com.glimpse.gpm.service.TokenService;
-import com.glimpse.gpm.dto.usuario.UsuarioRequest;
-import com.glimpse.gpm.dto.usuario.UsuarioResponse;
-import com.glimpse.gpm.dto.usuario.LoginRequest;
-import com.glimpse.gpm.dto.usuario.LoginResponse;
 import com.glimpse.gpm.exception.RecursoNaoEncontradoException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
@@ -31,11 +28,13 @@ public class UsuarioController {
     private final UsuarioService service;
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
+    private final AutenticacaoService autenticacaoService;
 
-    public UsuarioController(UsuarioService service, AuthenticationManager authenticationManager, TokenService tokenService) {
+    public UsuarioController(UsuarioService service, AuthenticationManager authenticationManager, TokenService tokenService, AutenticacaoService autenticacaoService) {
         this.service = service;
         this.authenticationManager = authenticationManager;
         this.tokenService = tokenService;
+        this.autenticacaoService = autenticacaoService;
     }
 
     @Operation(summary = "Cadastrar novo usuário", description = "Rota pública. Cria um novo administrador/usuário para acesso ao painel do sistema.")
@@ -136,5 +135,19 @@ public class UsuarioController {
             // Se a senha estiver errada ou usuário não existir:
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+    }
+
+    @Operation(summary = "Solicitar recuperação de senha", description = "Rota pública. Dispara e-mail com link se o usuário existir.")
+    @PostMapping("/esqueci-senha")
+    public ResponseEntity<Void> solicitarRecuperacao(@RequestBody @Valid RecuperacaoSenhaRequest request) {
+        autenticacaoService.solicitarRecuperacao(request.getEmail());
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "Redefinir senha com token", description = "Rota pública. Recebe token do e-mail e salva a nova senha.")
+    @PostMapping("/redefinir-senha")
+    public ResponseEntity<Void> redefinirSenha(@RequestBody @Valid RedefinicaoSenhaRequest request) {
+        autenticacaoService.redefinirSenha(request.getToken(), request.getNovaSenha());
+        return ResponseEntity.ok().build();
     }
 }

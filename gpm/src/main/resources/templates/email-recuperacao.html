@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Recuperação de Senha</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+<h2>Redefinição de Senha</h2>
+<p>Você solicitou a redefinição de senha para sua conta no painel administrativo GPM.</p>
+<p>Clique no link abaixo para criar uma nova senha:</p>
+
+<!-- O Thymeleaf irá injetar a variável 'link' gerada no backend -->
+<p><a th:href="${link}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px;">Redefinir Minha Senha</a></p>
+
+<p>Este link expira em 15 minutos.</p>
+<p>Se você não solicitou esta alteração, ignore este e-mail.</p>
+</body>
+</html>
