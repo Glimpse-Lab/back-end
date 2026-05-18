@@ -37,7 +37,7 @@ public class EmailService {
             helper.setTo(emailDestino);
             helper.setSubject("Redefinição de Senha - GPM");
             helper.setText(htmlBody, true); // true indica que o conteúdo é HTML
-            helper.setFrom("nao-responda@gpmesquadrias.com.br");
+            helper.setFrom("glimpse.lab26@gmail.com");
 
             mailSender.send(message);
         } catch (MessagingException e) {
