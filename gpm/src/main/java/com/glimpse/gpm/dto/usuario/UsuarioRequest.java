@@ -1,5 +1,6 @@
 package com.glimpse.gpm.dto.usuario;
 
+import com.glimpse.gpm.enums.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -24,6 +25,9 @@ public class UsuarioRequest {
     @NotBlank(message = "Senha é obrigatória")
     private String senha;
 
+    @Schema(description = "Papel do usuário no sistema", example = "PADRAO", allowableValues = {"ADMIN", "PADRAO"})
+    private Role role = Role.PADRAO;
+
     public UsuarioRequest() {}
 
     public UsuarioRequest(String nome, String cpf, String email, String senha) {
@@ -31,6 +35,15 @@ public class UsuarioRequest {
         this.cpf = cpf;
         this.email = email;
         this.senha = senha;
+        this.role = Role.PADRAO;
+    }
+
+    public UsuarioRequest(String nome, String cpf, String email, String senha, Role role) {
+        this.nome = nome;
+        this.cpf = cpf;
+        this.email = email;
+        this.senha = senha;
+        this.role = role;
     }
 
     public String getNome() {
@@ -63,5 +76,13 @@ public class UsuarioRequest {
 
     public void setSenha(String senha) {
         this.senha = senha;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 }
