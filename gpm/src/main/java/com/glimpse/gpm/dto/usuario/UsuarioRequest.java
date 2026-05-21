@@ -25,8 +25,13 @@ public class UsuarioRequest {
     @NotBlank(message = "Senha é obrigatória")
     private String senha;
 
+<<<<<<< HEAD
     @Schema(description = "Função ou nível de acesso do usuário", example = "ADMIN")
     private Role role;
+=======
+    @Schema(description = "Papel do usuário no sistema", example = "PADRAO", allowableValues = {"ADMIN", "PADRAO"})
+    private Role role = Role.PADRAO;
+>>>>>>> 5473a219d8729a5acb2134046ac1f12992420a83
 
     public UsuarioRequest() {}
 
@@ -35,6 +40,17 @@ public class UsuarioRequest {
         this.cpf = cpf;
         this.email = email;
         this.senha = senha;
+<<<<<<< HEAD
+=======
+        this.role = Role.PADRAO;
+    }
+
+    public UsuarioRequest(String nome, String cpf, String email, String senha, Role role) {
+        this.nome = nome;
+        this.cpf = cpf;
+        this.email = email;
+        this.senha = senha;
+>>>>>>> 5473a219d8729a5acb2134046ac1f12992420a83
         this.role = role;
     }
 
@@ -50,6 +66,32 @@ public class UsuarioRequest {
     public String getSenha() { return senha; }
     public void setSenha(String senha) { this.senha = senha; }
 
+<<<<<<< HEAD
     public Role getRole() { return role; }
     public void setRole(Role role) { this.role = role; }
+=======
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+>>>>>>> 5473a219d8729a5acb2134046ac1f12992420a83
 }

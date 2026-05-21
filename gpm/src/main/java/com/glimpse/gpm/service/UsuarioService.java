@@ -1,5 +1,6 @@
 package com.glimpse.gpm.service;
 
+import com.glimpse.gpm.dto.usuario.UpdateUsuarioRequest;
 import com.glimpse.gpm.entity.Usuario;
 import com.glimpse.gpm.exception.DadosInvalidosException;
 import com.glimpse.gpm.exception.RecursoNaoEncontradoException;
@@ -73,14 +74,24 @@ public class UsuarioService {
             throw new RecursoNaoEncontradoException("Usuário não encontrado.");
         }
 
+<<<<<<< HEAD
         // validate basic fields (password optional)
         validarDadosUsuario(usuarioAtualizado);
 
+=======
+>>>>>>> 5473a219d8729a5acb2134046ac1f12992420a83
         Usuario usuarioBanco = usuarioEncontrado.get();
 
-        usuarioBanco.setNome(usuarioAtualizado.getNome());
-        usuarioBanco.setCpf(usuarioAtualizado.getCpf());
-        usuarioBanco.setEmail(usuarioAtualizado.getEmail());
+        // Atualizar apenas campos que foram fornecidos (não null/vazios)
+        if (usuarioAtualizado.getNome() != null && !usuarioAtualizado.getNome().isBlank()) {
+            usuarioBanco.setNome(usuarioAtualizado.getNome());
+        }
+        if (usuarioAtualizado.getCpf() != null && !usuarioAtualizado.getCpf().isBlank()) {
+            usuarioBanco.setCpf(usuarioAtualizado.getCpf());
+        }
+        if (usuarioAtualizado.getEmail() != null && !usuarioAtualizado.getEmail().isBlank()) {
+            usuarioBanco.setEmail(usuarioAtualizado.getEmail());
+        }
         
         // Se for atualizar a senha, criptografa
         if (usuarioAtualizado.getSenha() != null && !usuarioAtualizado.getSenha().isEmpty()) {
@@ -90,6 +101,38 @@ public class UsuarioService {
         // atualizar role se fornecido
         if (usuarioAtualizado.getRole() != null) {
             usuarioBanco.setRole(usuarioAtualizado.getRole());
+        }
+
+        return repository.save(usuarioBanco);
+    }
+
+    /**
+     * Atualização parcial com UpdateUsuarioRequest (campos opcionais)
+     * @param id ID do usuário
+     * @param updateRequest Dados com campos opcionais
+     * @return Usuário atualizado
+     */
+    public Usuario atualizarParcial(Long id, UpdateUsuarioRequest updateRequest) {
+        Optional<Usuario> usuarioEncontrado = repository.findById(id);
+
+        if (usuarioEncontrado.isEmpty()) {
+            throw new RecursoNaoEncontradoException("Usuário não encontrado.");
+        }
+
+        Usuario usuarioBanco = usuarioEncontrado.get();
+
+        // Atualizar apenas campos fornecidos (merge seguro)
+        if (updateRequest.getNome() != null && !updateRequest.getNome().isBlank()) {
+            usuarioBanco.setNome(updateRequest.getNome());
+        }
+        if (updateRequest.getEmail() != null && !updateRequest.getEmail().isBlank()) {
+            usuarioBanco.setEmail(updateRequest.getEmail());
+        }
+        if (updateRequest.getSenha() != null && !updateRequest.getSenha().isBlank()) {
+            usuarioBanco.setSenha(passwordEncoder.encode(updateRequest.getSenha()));
+        }
+        if (updateRequest.getRole() != null) {
+            usuarioBanco.setRole(updateRequest.getRole());
         }
 
         return repository.save(usuarioBanco);

@@ -1,5 +1,6 @@
 package com.glimpse.gpm.dto.usuario;
 
+import com.glimpse.gpm.enums.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Objeto de resposta de autenticação bem-sucedida, contendo o Token JWT")
@@ -17,6 +18,9 @@ public class LoginResponse {
     @Schema(description = "CPF do usuário", example = "12345678900")
     private String cpf;
 
+    @Schema(description = "Papel do usuário no sistema", example = "PADRAO", allowableValues = {"ADMIN", "PADRAO"})
+    private Role role;
+
     @Schema(description = "Token JWT no formato Bearer para ser enviado no Header das próximas requisições", example = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBncG1lc3F1YWRyaWFzLmNvbS5iciIsImlkIjoxLCJub21lIjoiV2FnbmVyIiwiaWF0IjoxNzE0MTU2MjExLCJleHAiOjE3MTQxNTk4MTF9...")
     private String token;
 
@@ -27,6 +31,16 @@ public class LoginResponse {
         this.nome = nome;
         this.email = email;
         this.cpf = cpf;
+        this.token = token;
+        this.role = Role.PADRAO;
+    }
+
+    public LoginResponse(Long id, String nome, String email, String cpf, Role role, String token) {
+        this.id = id;
+        this.nome = nome;
+        this.email = email;
+        this.cpf = cpf;
+        this.role = role;
         this.token = token;
     }
 
@@ -68,5 +82,13 @@ public class LoginResponse {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 }

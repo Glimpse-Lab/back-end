@@ -18,7 +18,11 @@ public class UsuarioResponse {
     @Schema(description = "E-mail de acesso", example = "admin@gpmesquadrias.com.br")
     private String email;
 
+<<<<<<< HEAD
     @Schema(description = "Perfil de acesso do usuário", example = "ADMIN")
+=======
+    @Schema(description = "Papel do usuário no sistema", example = "PADRAO", allowableValues = {"ADMIN", "PADRAO"})
+>>>>>>> 5473a219d8729a5acb2134046ac1f12992420a83
     private Role role;
 
     public UsuarioResponse() {}
@@ -28,6 +32,17 @@ public class UsuarioResponse {
         this.nome = nome;
         this.cpf = cpf;
         this.email = email;
+<<<<<<< HEAD
+=======
+        this.role = Role.PADRAO;
+    }
+
+    public UsuarioResponse(Long id, String nome, String cpf, String email, Role role) {
+        this.id = id;
+        this.nome = nome;
+        this.cpf = cpf;
+        this.email = email;
+>>>>>>> 5473a219d8729a5acb2134046ac1f12992420a83
         this.role = role;
     }
 
@@ -62,6 +77,10 @@ public class UsuarioResponse {
     public Role getRole() {
         return role;
     }
+<<<<<<< HEAD
+=======
+
+>>>>>>> 5473a219d8729a5acb2134046ac1f12992420a83
     public void setRole(Role role) {
         this.role = role;
     }

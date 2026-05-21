@@ -2,6 +2,8 @@ package com.glimpse.gpm.entity;
 
 import com.glimpse.gpm.enums.Role;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -28,6 +30,7 @@ public class Usuario implements UserDetails {
     private String email;
     @NotBlank(message = "Senha é obrigatória")
     private String senha;
+<<<<<<< HEAD
     private String role = "PADRAO";
 
     @Override
@@ -42,6 +45,14 @@ public class Usuario implements UserDetails {
             // Se role inválida, retorna PADRAO
         }
         return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+=======
+    @Enumerated(EnumType.STRING)
+    private Role role = Role.PADRAO;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
+>>>>>>> 5473a219d8729a5acb2134046ac1f12992420a83
     }
 
     @Override
@@ -80,6 +91,34 @@ public class Usuario implements UserDetails {
     public String getSenha() { return senha; }
     public void setSenha(String senha) { this.senha = senha; }
 
+<<<<<<< HEAD
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
 }
+=======
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+}
+>>>>>>> 5473a219d8729a5acb2134046ac1f12992420a83
