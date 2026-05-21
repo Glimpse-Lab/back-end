@@ -5,26 +5,31 @@ import com.glimpse.gpm.dto.usuario.LoginRequest;
 import com.glimpse.gpm.dto.usuario.LoginResponse;
 import com.glimpse.gpm.dto.usuario.RecuperacaoSenhaRequest;
 import com.glimpse.gpm.dto.usuario.RedefinicaoSenhaRequest;
+import com.glimpse.gpm.dto.usuario.UpdateUsuarioRequest;
 import com.glimpse.gpm.dto.usuario.UsuarioRequest;
 import com.glimpse.gpm.dto.usuario.UsuarioResponse;
 import com.glimpse.gpm.entity.Usuario;
 import com.glimpse.gpm.enums.Role;
+import com.glimpse.gpm.exception.RecursoNaoEncontradoException;
 import com.glimpse.gpm.service.AutenticacaoService;
 import com.glimpse.gpm.service.TokenService;
 import com.glimpse.gpm.service.UsuarioService;
-import com.glimpse.gpm.exception.RecursoNaoEncontradoException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.security.core.context.SecurityContextHolder;
-import java.util.Map;
-import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Optional;
@@ -47,16 +52,6 @@ public class UsuarioController {
         this.autenticacaoService = autenticacaoService;
     }
 
-    private Role parseRole(String r) {
-        if (r == null) return Role.PADRAO;
-        if ("PADRÃO".equalsIgnoreCase(r)) r = "PADRAO";
-        try {
-            return Role.valueOf(r.toUpperCase());
-        } catch (Exception e) {
-            return Role.PADRAO;
-        }
-    }
-
     @Operation(summary = "Cadastrar novo usuário", description = "Rota pública. Cria um novo administrador/usuário para acesso ao painel do sistema.")
     @PostMapping
     public ResponseEntity<UsuarioResponse> criar(@Valid @RequestBody UsuarioRequest usuarioRequest) {
@@ -65,137 +60,71 @@ public class UsuarioController {
         usuario.setCpf(usuarioRequest.getCpf());
         usuario.setEmail(usuarioRequest.getEmail());
         usuario.setSenha(usuarioRequest.getSenha());
-<<<<<<< HEAD
-        if (usuarioRequest.getRole() != null) {
-            usuario.setRole(usuarioRequest.getRole().name());
-        }
+        usuario.setRole(usuarioRequest.getRole() != null ? usuarioRequest.getRole() : Role.PADRAO);
 
         Usuario usuarioSalvo = service.salvar(usuario);
-        Role roleResp = parseRole(usuarioSalvo.getRole());
-        UsuarioResponse response = new UsuarioResponse(usuarioSalvo.getId(), usuarioSalvo.getNome(), usuarioSalvo.getCpf(), usuarioSalvo.getEmail(), roleResp);
-=======
-        
-        // Atribuir role se informado, senão usa PADRAO como padrão
-        if (usuarioRequest.getRole() != null) {
-            usuario.setRole(usuarioRequest.getRole());
-        } else {
-            usuario.setRole(Role.PADRAO);
-        }
-
-        Usuario usuarioSalvo = service.salvar(usuario);
-        UsuarioResponse response = new UsuarioResponse(usuarioSalvo.getId(), usuarioSalvo.getNome(), usuarioSalvo.getCpf(), usuarioSalvo.getEmail(), usuarioSalvo.getRole());
->>>>>>> 5473a219d8729a5acb2134046ac1f12992420a83
+        UsuarioResponse response = new UsuarioResponse(
+                usuarioSalvo.getId(),
+                usuarioSalvo.getNome(),
+                usuarioSalvo.getCpf(),
+                usuarioSalvo.getEmail(),
+                usuarioSalvo.getRole()
+        );
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @Operation(summary = "Listar todos os usuários", description = "Requer autenticação JWT. Apenas ADMINs podem listar todos. Usuários PADRAO veem apenas a si mesmos.")
+    @Operation(summary = "Listar todos os usuários", description = "Requer autenticação JWT. Admin vê todos os usuários, PADRAO vê apenas a si mesmo.")
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN') or hasRole('PADRAO')")
     public ResponseEntity<List<UsuarioResponse>> listar() {
-        // Obter usuário logado do contexto de segurança
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        
-        List<Usuario> usuarios;
-        
-        // Se o usuário é ADMIN, lista todos
-        if (principal instanceof Usuario) {
-            Usuario usuarioLogado = (Usuario) principal;
-            if (usuarioLogado.getRole() == Role.ADMIN) {
-                usuarios = service.listarUsuarios();
-            } else {
-                // Se é PADRAO, lista apenas a si mesmo
-                usuarios = List.of(usuarioLogado);
-            }
-        } else {
-            // Fallback: retorna lista vazia se não conseguir autenticar
-            usuarios = List.of();
-        }
-        
+        Usuario usuarioLogado = usuarioAutenticado();
+        List<Usuario> usuarios = usuarioLogado.getRole() == Role.ADMIN
+                ? service.listarUsuarios()
+                : List.of(usuarioLogado);
+
         List<UsuarioResponse> responses = usuarios.stream()
-<<<<<<< HEAD
-                .map(u -> new UsuarioResponse(u.getId(), u.getNome(), u.getCpf(), u.getEmail(), parseRole(u.getRole())))
-=======
                 .map(u -> new UsuarioResponse(u.getId(), u.getNome(), u.getCpf(), u.getEmail(), u.getRole()))
->>>>>>> 5473a219d8729a5acb2134046ac1f12992420a83
                 .collect(Collectors.toList());
         return ResponseEntity.ok(responses);
     }
 
     @Operation(summary = "Buscar usuário por ID", description = "Requer autenticação JWT. Retorna os detalhes de um usuário específico.")
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('PADRAO')")
     public ResponseEntity<UsuarioResponse> buscarUsuarioPorId(@PathVariable Long id) {
+        Usuario usuarioLogado = usuarioAutenticado();
+        if (usuarioLogado.getRole() != Role.ADMIN && !usuarioLogado.getId().equals(id)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         Optional<Usuario> usuarioOptional = service.buscarUsuarioPorId(id);
         if (usuarioOptional.isPresent()) {
             Usuario usuario = usuarioOptional.get();
-<<<<<<< HEAD
-            UsuarioResponse response = new UsuarioResponse(usuario.getId(), usuario.getNome(), usuario.getCpf(), usuario.getEmail(), parseRole(usuario.getRole()));
-=======
             UsuarioResponse response = new UsuarioResponse(usuario.getId(), usuario.getNome(), usuario.getCpf(), usuario.getEmail(), usuario.getRole());
->>>>>>> 5473a219d8729a5acb2134046ac1f12992420a83
             return ResponseEntity.ok(response);
-        } else {
-            return ResponseEntity.notFound().build();
         }
+        return ResponseEntity.notFound().build();
     }
 
-    @Operation(summary = "Atualizar usuário", description = "Requer autenticação JWT. Usuários PADRAO só podem atualizar a si mesmos (nome, email, senha) - NÃO podem alterar role. ADMINs podem atualizar qualquer usuário e sua role.")
+    @Operation(summary = "Atualizar usuário", description = "Requer autenticação JWT. Admin pode atualizar qualquer usuário; PADRAO só o próprio usuário e sem alterar role.")
     @PutMapping("/{id}")
-<<<<<<< HEAD
-    public ResponseEntity<Object> atualizar(@PathVariable Long id, @RequestBody UsuarioRequest usuarioRequest) {
-        try {
-            var usuarioOpt = service.buscarUsuarioPorId(id);
-            // Recupera usuário logado para verificar permissões
-            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            Usuario usuarioLogado = null;
-            if (principal instanceof Usuario) usuarioLogado = (Usuario) principal;
-
-            // Se usuário logado for PADRAO, não pode alterar permissões (role)
-            if (usuarioLogado != null && usuarioLogado.getRole() != null && usuarioLogado.getRole().equalsIgnoreCase("PADRAO") && usuarioRequest.getRole() != null) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "Você não tem permissão para alterar permissões."));
-            }
-            if (usuarioOpt.isEmpty()) return ResponseEntity.notFound().build();
-
-            Usuario existente = usuarioOpt.get();
-            Usuario usuario = new Usuario();
-            // evitar que o valor default da entidade ('PADRAO') sobrescreva o role quando não informado
-            usuario.setRole(null);
-            usuario.setNome(usuarioRequest.getNome() != null ? usuarioRequest.getNome() : existente.getNome());
-            usuario.setCpf(usuarioRequest.getCpf() != null ? usuarioRequest.getCpf() : existente.getCpf());
-            usuario.setEmail(usuarioRequest.getEmail() != null ? usuarioRequest.getEmail() : existente.getEmail());
-            usuario.setSenha(usuarioRequest.getSenha());
-            if (usuarioRequest.getRole() != null) usuario.setRole(usuarioRequest.getRole().name());
-
-            Usuario usuarioAtualizado = service.atualizar(id, usuario);
-            UsuarioResponse response = new UsuarioResponse(usuarioAtualizado.getId(), usuarioAtualizado.getNome(), usuarioAtualizado.getCpf(), usuarioAtualizado.getEmail(), parseRole(usuarioAtualizado.getRole()));
-=======
-    @PreAuthorize("hasRole('ADMIN') or hasRole('PADRAO')")
     public ResponseEntity<UsuarioResponse> atualizar(@PathVariable Long id, @RequestBody UpdateUsuarioRequest usuarioRequest) {
+        Usuario usuarioLogado = usuarioAutenticado();
+
+        if (usuarioLogado.getRole() != Role.ADMIN && !usuarioLogado.getId().equals(id)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        if (usuarioLogado.getRole() == Role.PADRAO && usuarioRequest.getRole() != null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         try {
-            // Obter usuário logado do contexto de segurança
-            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            
-            // Verificar permissões
-            if (principal instanceof Usuario) {
-                Usuario usuarioLogado = (Usuario) principal;
-                
-                // Se não é ADMIN e não é o próprio usuário, retornar 403
-                if (usuarioLogado.getRole() != Role.ADMIN && !usuarioLogado.getId().equals(id)) {
-                    return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-                }
-                
-                // Se é PADRAO, NÃO pode alterar role de forma alguma (nem sua própria)
-                if (usuarioLogado.getRole() == Role.PADRAO && usuarioRequest.getRole() != null) {
-                    return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-                }
-            } else {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-            }
-            
-            // Passar a requisição de atualização para o service (que fará o merge)
             Usuario usuarioAtualizado = service.atualizarParcial(id, usuarioRequest);
-            UsuarioResponse response = new UsuarioResponse(usuarioAtualizado.getId(), usuarioAtualizado.getNome(), usuarioAtualizado.getCpf(), usuarioAtualizado.getEmail(), usuarioAtualizado.getRole());
->>>>>>> 5473a219d8729a5acb2134046ac1f12992420a83
+            UsuarioResponse response = new UsuarioResponse(
+                    usuarioAtualizado.getId(),
+                    usuarioAtualizado.getNome(),
+                    usuarioAtualizado.getCpf(),
+                    usuarioAtualizado.getEmail(),
+                    usuarioAtualizado.getRole()
+            );
             return ResponseEntity.ok(response);
         } catch (RecursoNaoEncontradoException e) {
             return ResponseEntity.notFound().build();
@@ -204,29 +133,16 @@ public class UsuarioController {
 
     @Operation(summary = "Excluir usuário", description = "Requer autenticação JWT. Apenas ADMINs podem excluir usuários.")
     @DeleteMapping("/{id}")
-<<<<<<< HEAD
-    public ResponseEntity<Object> excluir(@PathVariable Long id) {
-        // Recupera usuário logado e impede exclusão por usuários PADRAO
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (principal instanceof Usuario) {
-            Usuario usuarioLogado = (Usuario) principal;
-            if (usuarioLogado.getRole() != null && usuarioLogado.getRole().equalsIgnoreCase("PADRAO")) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "Usuários padrão não podem excluir contas."));
-            }
-=======
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> excluir(@PathVariable Long id) {
-        boolean excluido = service.deletar(id);
-
-        if (excluido) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
->>>>>>> 5473a219d8729a5acb2134046ac1f12992420a83
+        Usuario usuarioLogado = usuarioAutenticado();
+        if (usuarioLogado.getRole() != Role.ADMIN) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         boolean excluido = service.deletar(id);
-        if (excluido) return ResponseEntity.noContent().build();
+        if (excluido) {
+            return ResponseEntity.noContent().build();
+        }
         return ResponseEntity.notFound().build();
     }
 
@@ -239,10 +155,6 @@ public class UsuarioController {
             Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
             String tokenJWT = tokenService.gerarToken(usuarioLogado);
 
-<<<<<<< HEAD
-            LoginResponse response = new LoginResponse(usuarioLogado.getId(), usuarioLogado.getNome(), usuarioLogado.getEmail(), usuarioLogado.getCpf(), tokenJWT);
-=======
-            // 5. Monta a resposta enviando o TOKEN com a role:
             LoginResponse response = new LoginResponse(
                     usuarioLogado.getId(),
                     usuarioLogado.getNome(),
@@ -251,7 +163,6 @@ public class UsuarioController {
                     usuarioLogado.getRole(),
                     tokenJWT
             );
->>>>>>> 5473a219d8729a5acb2134046ac1f12992420a83
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -270,5 +181,13 @@ public class UsuarioController {
     public ResponseEntity<Void> redefinirSenha(@RequestBody @Valid RedefinicaoSenhaRequest request) {
         autenticacaoService.redefinirSenha(request.getToken(), request.getNovaSenha());
         return ResponseEntity.ok().build();
+    }
+
+    private Usuario usuarioAutenticado() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof Usuario usuario) {
+            return usuario;
+        }
+        throw new RecursoNaoEncontradoException("Usuário autenticado não encontrado.");
     }
 }

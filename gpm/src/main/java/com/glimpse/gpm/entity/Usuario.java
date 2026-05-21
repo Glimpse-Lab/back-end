@@ -2,8 +2,8 @@ package com.glimpse.gpm.entity;
 
 import com.glimpse.gpm.enums.Role;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -21,38 +21,27 @@ public class Usuario implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @NotBlank(message = "O nome é obrigatório")
     private String nome;
+
     @NotBlank(message = "CPF é obrigatório")
     private String cpf;
+
     @NotBlank(message = "O email é obrigatório")
     @Email(message = "Email inválido")
     private String email;
+
     @NotBlank(message = "Senha é obrigatória")
     private String senha;
-<<<<<<< HEAD
-    private String role = "PADRAO";
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Comparação case-insensitive com enum usando try-catch
-        try {
-            Role roleEnum = Role.valueOf(this.role.toUpperCase());
-            if (roleEnum == Role.ADMIN) {
-                return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"));
-            }
-        } catch (IllegalArgumentException e) {
-            // Se role inválida, retorna PADRAO
-        }
-        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
-=======
     @Enumerated(EnumType.STRING)
     private Role role = Role.PADRAO;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
->>>>>>> 5473a219d8729a5acb2134046ac1f12992420a83
+        Role effectiveRole = role == null ? Role.PADRAO : role;
+        return List.of(new SimpleGrantedAuthority("ROLE_" + effectiveRole.name()));
     }
 
     @Override
@@ -66,36 +55,45 @@ public class Usuario implements UserDetails {
     }
 
     @Override
-    public boolean isAccountNonExpired() { return true; }
+    public boolean isAccountNonExpired() {
+        return true;
+    }
 
     @Override
-    public boolean isAccountNonLocked() { return true; }
+    public boolean isAccountNonLocked() {
+        return true;
+    }
 
     @Override
-    public boolean isCredentialsNonExpired() { return true; }
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
 
     @Override
-    public boolean isEnabled() { return true; }
+    public boolean isEnabled() {
+        return true;
+    }
 
-    public Long getId() { return id; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getNome() { return nome; }
-    public void setNome(String nome) { this.nome = nome; }
+    public String getNome() {
+        return nome;
+    }
 
-    public String getCpf() { return cpf; }
-    public void setCpf(String cpf) { this.cpf = cpf; }
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public String getCpf() {
+        return cpf;
+    }
 
-    public String getSenha() { return senha; }
-    public void setSenha(String senha) { this.senha = senha; }
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
+    }
 
-<<<<<<< HEAD
-    public String getRole() { return role; }
-    public void setRole(String role) { this.role = role; }
-}
-=======
     public String getEmail() {
         return email;
     }
@@ -119,6 +117,4 @@ public class Usuario implements UserDetails {
     public void setRole(Role role) {
         this.role = role;
     }
-
 }
->>>>>>> 5473a219d8729a5acb2134046ac1f12992420a83

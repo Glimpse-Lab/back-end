@@ -74,12 +74,7 @@ public class UsuarioService {
             throw new RecursoNaoEncontradoException("Usuário não encontrado.");
         }
 
-<<<<<<< HEAD
-        // validate basic fields (password optional)
-        validarDadosUsuario(usuarioAtualizado);
 
-=======
->>>>>>> 5473a219d8729a5acb2134046ac1f12992420a83
         Usuario usuarioBanco = usuarioEncontrado.get();
 
         // Atualizar apenas campos que foram fornecidos (não null/vazios)
