@@ -1,5 +1,6 @@
 package com.glimpse.gpm.dto.usuario;
 
+import com.glimpse.gpm.enums.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -24,44 +25,31 @@ public class UsuarioRequest {
     @NotBlank(message = "Senha é obrigatória")
     private String senha;
 
+    @Schema(description = "Função ou nível de acesso do usuário", example = "ADMIN")
+    private Role role;
+
     public UsuarioRequest() {}
 
-    public UsuarioRequest(String nome, String cpf, String email, String senha) {
+    public UsuarioRequest(String nome, String cpf, String email, String senha, Role role) {
         this.nome = nome;
         this.cpf = cpf;
         this.email = email;
         this.senha = senha;
+        this.role = role;
     }
 
-    public String getNome() {
-        return nome;
-    }
+    public String getNome() { return nome; }
+    public void setNome(String nome) { this.nome = nome; }
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
+    public String getCpf() { return cpf; }
+    public void setCpf(String cpf) { this.cpf = cpf; }
 
-    public String getCpf() {
-        return cpf;
-    }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
-    public void setCpf(String cpf) {
-        this.cpf = cpf;
-    }
+    public String getSenha() { return senha; }
+    public void setSenha(String senha) { this.senha = senha; }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getSenha() {
-        return senha;
-    }
-
-    public void setSenha(String senha) {
-        this.senha = senha;
-    }
+    public Role getRole() { return role; }
+    public void setRole(Role role) { this.role = role; }
 }

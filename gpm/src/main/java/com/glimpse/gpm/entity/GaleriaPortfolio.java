@@ -3,36 +3,40 @@ package com.glimpse.gpm.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "galeria_portfolio")
 public class GaleriaPortfolio {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Título do projeto é obrigatório")
+    @NotBlank
     private String titulo;
 
-    @NotBlank(message = "Descrição é obrigatória")
+    @NotBlank
     @Column(columnDefinition = "TEXT")
     private String descricao;
 
-    @NotBlank(message = "Local do projeto é obrigatório")
+    @NotBlank
     private String localizacao;
 
     @Column(columnDefinition = "TEXT")
     private String imagensUrls;
 
-    @NotBlank(message = "Categoria do projeto é obrigatória")
-    private String categoria;
+    @ManyToOne
+    @JoinColumn(name = "categoria_id")
+    private Categoria categoria;
 
-    @NotNull(message = "Data do projeto é obrigatória")
+    @Column(columnDefinition = "TEXT")
+    private String materiaisUtilizados;
+
+    @NotNull
     private LocalDateTime dataProjeto;
 
-    @NotNull(message = "Data de criação é obrigatória")
+    @NotNull
     private LocalDateTime dataCriacao;
 
     private LocalDateTime dataAtualizacao;
@@ -41,84 +45,38 @@ public class GaleriaPortfolio {
     @JoinColumn(name = "usuario_id")
     private Usuario usuarioCriador;
 
-    // Getters e Setters
-    public Long getId() {
-        return id;
-    }
+    public GaleriaPortfolio() {}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public String getTitulo() {
-        return titulo;
-    }
+    public String getTitulo() { return titulo; }
+    public void setTitulo(String titulo) { this.titulo = titulo; }
 
-    public void setTitulo(String titulo) {
-        this.titulo = titulo;
-    }
+    public String getDescricao() { return descricao; }
+    public void setDescricao(String descricao) { this.descricao = descricao; }
 
-    public String getDescricao() {
-        return descricao;
-    }
+    public String getLocalizacao() { return localizacao; }
+    public void setLocalizacao(String localizacao) { this.localizacao = localizacao; }
 
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
-    }
+    public String getImagensUrls() { return imagensUrls; }
+    public void setImagensUrls(String imagensUrls) { this.imagensUrls = imagensUrls; }
 
-    public String getLocalizacao() {
-        return localizacao;
-    }
+    public Categoria getCategoria() { return categoria; }
+    public void setCategoria(Categoria categoria) { this.categoria = categoria; }
 
-    public void setLocalizacao(String localizacao) {
-        this.localizacao = localizacao;
-    }
+    public String getMateriaisUtilizados() { return materiaisUtilizados; }
+    public void setMateriaisUtilizados(String materiaisUtilizados) { this.materiaisUtilizados = materiaisUtilizados; }
 
-    public String getImagensUrls() {
-        return imagensUrls;
-    }
+    public LocalDateTime getDataProjeto() { return dataProjeto; }
+    public void setDataProjeto(LocalDateTime dataProjeto) { this.dataProjeto = dataProjeto; }
 
-    public void setImagensUrls(String imagensUrls) {
-        this.imagensUrls = imagensUrls;
-    }
+    public LocalDateTime getDataCriacao() { return dataCriacao; }
+    public void setDataCriacao(LocalDateTime dataCriacao) { this.dataCriacao = dataCriacao; }
 
-    public String getCategoria() {
-        return categoria;
-    }
+    public LocalDateTime getDataAtualizacao() { return dataAtualizacao; }
+    public void setDataAtualizacao(LocalDateTime dataAtualizacao) { this.dataAtualizacao = dataAtualizacao; }
 
-    public void setCategoria(String categoria) {
-        this.categoria = categoria;
-    }
-
-    public LocalDateTime getDataProjeto() {
-        return dataProjeto;
-    }
-
-    public void setDataProjeto(LocalDateTime dataProjeto) {
-        this.dataProjeto = dataProjeto;
-    }
-
-    public LocalDateTime getDataCriacao() {
-        return dataCriacao;
-    }
-
-    public void setDataCriacao(LocalDateTime dataCriacao) {
-        this.dataCriacao = dataCriacao;
-    }
-
-    public LocalDateTime getDataAtualizacao() {
-        return dataAtualizacao;
-    }
-
-    public void setDataAtualizacao(LocalDateTime dataAtualizacao) {
-        this.dataAtualizacao = dataAtualizacao;
-    }
-
-    public Usuario getUsuarioCriador() {
-        return usuarioCriador;
-    }
-
-    public void setUsuarioCriador(Usuario usuarioCriador) {
-        this.usuarioCriador = usuarioCriador;
-    }
+    public Usuario getUsuarioCriador() { return usuarioCriador; }
+    public void setUsuarioCriador(Usuario usuarioCriador) { this.usuarioCriador = usuarioCriador; }
 }

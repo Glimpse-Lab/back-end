@@ -40,14 +40,30 @@ public class OrcamentoComClienteRequest {
     @Schema(description = "Complemento do endereço (apartamento, bloco, etc.)", example = "Apto 45")
     private String complemento;
 
+    @Schema(description = "Rua do endereço de instalação (preenchido automaticamente a partir do CEP, mas pode ser editado)", example = "Rua da Consolação")
+    private String rua;
+
+    @Schema(description = "Bairro do endereço de instalação (preenchido automaticamente a partir do CEP, mas pode ser editado)", example = "Centro")
+    private String bairro;
+
+    @Schema(description = "Cidade do endereço de instalação (preenchido automaticamente a partir do CEP, mas pode ser editado)", example = "São Paulo")
+    private String cidade;
+
+    @Schema(description = "Estado do endereço de instalação (preenchido automaticamente a partir do CEP, mas pode ser editado)", example = "SP")
+    private String estado;
+
     public OrcamentoComClienteRequest() {}
 
-    public OrcamentoComClienteRequest(Long clienteId, String descricaoProjeto, String cep, Integer numEndereco, String complemento) {
+    public OrcamentoComClienteRequest(Long clienteId, String descricaoProjeto, String cep, Integer numEndereco, String complemento, String rua, String bairro, String cidade, String estado) {
         this.clienteId = clienteId;
         this.descricaoProjeto = descricaoProjeto;
         this.cep = cep;
         this.numEndereco = numEndereco;
         this.complemento = complemento;
+        this.rua = rua;
+        this.bairro = bairro;
+        this.cidade = cidade;
+        this.estado = estado;
     }
 
     // Getters and Setters
@@ -113,6 +129,38 @@ public class OrcamentoComClienteRequest {
 
     public void setComplemento(String complemento) {
         this.complemento = complemento;
+    }
+
+    public String getRua() {
+        return rua;
+    }
+
+    public void setRua(String rua) {
+        this.rua = rua;
+    }
+
+    public String getBairro() {
+        return bairro;
+    }
+
+    public void setBairro(String bairro) {
+        this.bairro = bairro;
+    }
+
+    public String getCidade() {
+        return cidade;
+    }
+
+    public void setCidade(String cidade) {
+        this.cidade = cidade;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 
     // Método auxiliar para validação

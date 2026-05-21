@@ -27,9 +27,13 @@ public class UsuarioService {
      */
     public Usuario salvar(Usuario usuario) {
         validarDadosUsuario(usuario);
-        
+
         if (repository.findByEmail(usuario.getEmail()).isPresent()) {
             throw new DadosInvalidosException("Email já cadastrado.");
+        }
+
+        if (usuario.getSenha() == null || usuario.getSenha().trim().isEmpty()) {
+            throw new DadosInvalidosException("Senha é obrigatória para cadastro.");
         }
 
         // Criptografa a senha usando BCrypt
@@ -69,6 +73,7 @@ public class UsuarioService {
             throw new RecursoNaoEncontradoException("Usuário não encontrado.");
         }
 
+        // validate basic fields (password optional)
         validarDadosUsuario(usuarioAtualizado);
 
         Usuario usuarioBanco = usuarioEncontrado.get();
@@ -80,6 +85,11 @@ public class UsuarioService {
         // Se for atualizar a senha, criptografa
         if (usuarioAtualizado.getSenha() != null && !usuarioAtualizado.getSenha().isEmpty()) {
             usuarioBanco.setSenha(passwordEncoder.encode(usuarioAtualizado.getSenha()));
+        }
+
+        // atualizar role se fornecido
+        if (usuarioAtualizado.getRole() != null) {
+            usuarioBanco.setRole(usuarioAtualizado.getRole());
         }
 
         return repository.save(usuarioBanco);
@@ -134,8 +144,6 @@ public class UsuarioService {
         if (usuario.getEmail() == null || usuario.getEmail().trim().isEmpty()) {
             throw new DadosInvalidosException("O email do usuário é obrigatório.");
         }
-        if (usuario.getSenha() == null || usuario.getSenha().trim().isEmpty()) {
-            throw new DadosInvalidosException("A senha do usuário é obrigatória.");
-        }
+        // Nota: senha é validada apenas no momento do cadastro
     }
 }

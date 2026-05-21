@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.glimpse.gpm.config.ApiErrorResponses;
 import com.glimpse.gpm.dto.orcamento.OrcamentoComClienteRequest;
 import com.glimpse.gpm.dto.orcamento.OrcamentoRequest;
+import com.glimpse.gpm.dto.orcamento.OrcamentoStatusRequest;
 import com.glimpse.gpm.dto.orcamento.OrcamentoResponse;
 import com.glimpse.gpm.service.OrcamentoService;
 
@@ -63,6 +64,12 @@ public class OrcamentoController {
     @PutMapping("/{id}")
     public ResponseEntity<OrcamentoResponse> atualizar(@PathVariable Long id, @Valid @RequestBody OrcamentoRequest orcamentoRequest) {
         return ResponseEntity.ok(service.atualizar(id, orcamentoRequest));
+    }
+
+    @Operation(summary = "Atualizar status do orçamento", description = "Requer autenticação JWT. Atualiza somente o status do orçamento.")
+    @PutMapping("/{id}/status")
+    public ResponseEntity<OrcamentoResponse> atualizarStatus(@PathVariable Long id, @Valid @RequestBody OrcamentoStatusRequest request) {
+        return ResponseEntity.ok(service.atualizarStatus(id, request.getStatus()));
     }
 
     @Operation(summary = "Excluir orçamento", description = "Requer autenticação JWT. Remove um orçamento do banco de dados pelo seu ID.")

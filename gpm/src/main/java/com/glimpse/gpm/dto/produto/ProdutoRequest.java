@@ -27,13 +27,30 @@ public class ProdutoRequest {
     @Min(value = 0, message = "A quantidade de estoque não pode ser negativa")
     private Integer quantidadeEstoque;
 
+    @Schema(description = "Especificações Técnicas do produto", example = "Vidro temperado 10mm, Esquadria de alumínio preto, Dimensões: 1,50m x 1,20m")
+    @NotBlank(message = "A especificação técnica é obrigatória")
+    private String especificacaoTecnica;
+
+    @Schema(description = "URL da imagem do produto", example = "https://exemplo.com/imagem-produto.jpg")
+    @NotBlank(message = "A URL da imagem é obrigatória")
+    private String imagemUrl;
+
+    @Schema(description = "ID da categoria do produto", example = "2")
+    @NotNull(message = "O ID da categoria é obrigatório")
+    @DecimalMin(value = "1", inclusive = true, message = "O ID da categoria deve ser um número positivo")
+    private Long categoriaId;
+
+
     public ProdutoRequest() {}
 
-    public ProdutoRequest(String nome, String descricao, Double preco, Integer quantidadeEstoque) {
+    public ProdutoRequest(String nome, String descricao, Double preco, Integer quantidadeEstoque, String especificacaoTecnica, String imagemUrl, Long categoriaId) {
         this.nome = nome;
         this.descricao = descricao;
         this.preco = preco;
         this.quantidadeEstoque = quantidadeEstoque;
+        this.especificacaoTecnica = especificacaoTecnica;
+        this.imagemUrl = imagemUrl;
+        this.categoriaId = categoriaId;
     }
 
     public String getNome() {
@@ -66,5 +83,29 @@ public class ProdutoRequest {
 
     public void setQuantidadeEstoque(Integer quantidadeEstoque) {
         this.quantidadeEstoque = quantidadeEstoque;
+    }
+
+    public String getEspecificacaoTecnica() {
+        return especificacaoTecnica;
+    }
+
+    public void setEspecificacaoTecnica(String especificacaoTecnica) {
+        this.especificacaoTecnica = especificacaoTecnica;
+    }
+
+    public String getImagemUrl() {
+        return imagemUrl;
+    }
+
+    public void setImagemUrl(String imagemUrl) {
+        this.imagemUrl = imagemUrl;
+    }
+
+    public Long getCategoriaId() {
+        return categoriaId;
+    }
+
+    public void setCategoriaId(Long categoriaId) {
+        this.categoriaId = categoriaId;
     }
 }

@@ -20,14 +20,25 @@ public class ProdutoResponse {
     @Schema(description = "Quantidade disponível em estoque", example = "15")
     private Integer quantidadeEstoque;
 
+    @Schema(description = "Especificações Tecnicas do produto", example = "Vidro temperado 10mm, Esquadria de alumínio preto, Dimensões: 1,50m x 1,20m")
+    private String especificacaoTecnica;
+
+    @Schema(description = "Nome da categoria do produto", example = "Janelas")
+    private String categoriaNome;
+
     public ProdutoResponse() {}
 
-    public ProdutoResponse(Long id, String nome, String descricao, Double preco, Integer quantidadeEstoque) {
+    public ProdutoResponse(Long id, String nome, String descricao, Double preco, Integer quantidadeEstoque, String especificacaoTecnica, String categoriaNome) {
         this.id = id;
         this.nome = nome;
         this.descricao = descricao;
         this.preco = preco;
         this.quantidadeEstoque = quantidadeEstoque;
+        this.especificacaoTecnica = especificacaoTecnica;
+        this.categoriaNome = categoriaNome;
+    }
+
+    public ProdutoResponse(Long id, String nome, String descricao, Double preco, Integer quantidadeEstoque, String especificacaoTecnica, Long aLong) {
     }
 
     public Long getId() {
@@ -65,4 +76,18 @@ public class ProdutoResponse {
     public void setQuantidadeEstoque(Integer quantidadeEstoque) {
         this.quantidadeEstoque = quantidadeEstoque;
     }
+
+    public String getEspecificacaoTecnica() {
+        return especificacaoTecnica;
+    }
+    public void setEspecificacaoTecnica(String especificacaoTecnica) {
+        this.especificacaoTecnica = especificacaoTecnica;
+    }
+    public String getCategoriaNome() {
+        return categoriaNome;
+    }
+    public void setCategoriaNome(String categoriaNome) {
+        this.categoriaNome = categoriaNome;
+    }
+
 }

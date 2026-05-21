@@ -1,5 +1,6 @@
 package com.glimpse.gpm.entity;
 
+import com.glimpse.gpm.enums.Role;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -27,9 +28,19 @@ public class Usuario implements UserDetails {
     private String email;
     @NotBlank(message = "Senha é obrigatória")
     private String senha;
+    private String role = "PADRAO";
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+        // Comparação case-insensitive com enum usando try-catch
+        try {
+            Role roleEnum = Role.valueOf(this.role.toUpperCase());
+            if (roleEnum == Role.ADMIN) {
+                return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"));
+            }
+        } catch (IllegalArgumentException e) {
+            // Se role inválida, retorna PADRAO
+        }
         return List.of(new SimpleGrantedAuthority("ROLE_USER"));
     }
 
@@ -55,40 +66,20 @@ public class Usuario implements UserDetails {
     @Override
     public boolean isEnabled() { return true; }
 
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
 
-    public String getNome() {
-        return nome;
-    }
+    public String getNome() { return nome; }
+    public void setNome(String nome) { this.nome = nome; }
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
+    public String getCpf() { return cpf; }
+    public void setCpf(String cpf) { this.cpf = cpf; }
 
-    public String getCpf() {
-        return cpf;
-    }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
-    public void setCpf(String cpf) {
-        this.cpf = cpf;
-    }
+    public String getSenha() { return senha; }
+    public void setSenha(String senha) { this.senha = senha; }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getSenha() {
-        return senha;
-    }
-
-    public void setSenha(String senha) {
-        this.senha = senha;
-    }
-
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
 }

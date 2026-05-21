@@ -26,7 +26,11 @@ public class ProjetoRequest {
 
     @Schema(description = "Categoria para filtro na galeria (Ex: Janelas, Portas, Fachadas)", example = "Fachadas")
     @NotBlank(message = "Categoria do projeto é obrigatória")
-    private String categoria;
+    private Long categoriaId;
+
+    @Schema(description = "Material utilizado no projeto, para filtro na galeria (Ex: Vidro, Alumínio, Aço)", example = "Vidro")
+    @NotBlank(message = "Material do projeto é obrigatório")
+    private String materiaisUtilizados;
 
     @Schema(description = "Data em que o projeto foi executado ou concluído", example = "2026-03-15T00:00:00")
     @NotNull(message = "Data do projeto é obrigatória")
@@ -39,6 +43,14 @@ public class ProjetoRequest {
 
     public void setTitulo(String titulo) {
         this.titulo = titulo;
+    }
+
+    public String getMateriaisUtilizados() {
+        return materiaisUtilizados;
+    }
+
+    public void setMateriaisUtilizados(String materiaisUtilizados) {
+        this.materiaisUtilizados = materiaisUtilizados;
     }
 
     public String getDescricao() {
@@ -65,12 +77,12 @@ public class ProjetoRequest {
         this.imagensUrls = imagensUrls;
     }
 
-    public String getCategoria() {
-        return categoria;
+    public Long getCategoriaId() {
+        return categoriaId;
     }
 
-    public void setCategoria(String categoria) {
-        this.categoria = categoria;
+    public void setCategoriaId(Long categoriaId) {
+        this.categoriaId = categoriaId;
     }
 
     public LocalDateTime getDataProjeto() {

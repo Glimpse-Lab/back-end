@@ -1,13 +1,12 @@
 package com.glimpse.gpm.entity;
 
-import com.glimpse.gpm.enums.StatusOrcamento;
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "orcamentos")
 public class Orcamento {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,83 +20,48 @@ public class Orcamento {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private StatusOrcamento status;
+    private com.glimpse.gpm.enums.StatusOrcamento status;
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String descricaoProjeto;
 
-    @Column(nullable = false, length = 9)
+    @Column(length = 9)
     private String cep;
 
-    @Column(nullable = false)
     private Integer numEndereco;
 
     private String complemento;
 
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "endereco_id")
+    private Endereco endereco;
 
-    // Getters e Setters
+    public Orcamento() {}
 
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public Cliente getCliente() { return cliente; }
+    public void setCliente(Cliente cliente) { this.cliente = cliente; }
 
-    public Cliente getCliente() {
-        return cliente;
-    }
+    public LocalDateTime getDataSolicitacao() { return dataSolicitacao; }
+    public void setDataSolicitacao(LocalDateTime dataSolicitacao) { this.dataSolicitacao = dataSolicitacao; }
 
-    public void setCliente(Cliente cliente) {
-        this.cliente = cliente;
-    }
+    public com.glimpse.gpm.enums.StatusOrcamento getStatus() { return status; }
+    public void setStatus(com.glimpse.gpm.enums.StatusOrcamento status) { this.status = status; }
 
-    public LocalDateTime getDataSolicitacao() {
-        return dataSolicitacao;
-    }
+    public String getDescricaoProjeto() { return descricaoProjeto; }
+    public void setDescricaoProjeto(String descricaoProjeto) { this.descricaoProjeto = descricaoProjeto; }
 
-    public void setDataSolicitacao(LocalDateTime dataSolicitacao) {
-        this.dataSolicitacao = dataSolicitacao;
-    }
+    public String getCep() { return cep; }
+    public void setCep(String cep) { this.cep = cep; }
 
-    public StatusOrcamento getStatus() {
-        return status;
-    }
+    public Integer getNumEndereco() { return numEndereco; }
+    public void setNumEndereco(Integer numEndereco) { this.numEndereco = numEndereco; }
 
-    public void setStatus(StatusOrcamento status) {
-        this.status = status;
-    }
+    public String getComplemento() { return complemento; }
+    public void setComplemento(String complemento) { this.complemento = complemento; }
 
-    public String getDescricaoProjeto() {
-        return descricaoProjeto;
-    }
-
-    public void setDescricaoProjeto(String descricaoProjeto) {
-        this.descricaoProjeto = descricaoProjeto;
-    }
-
-    public String getCep() {
-        return cep;
-    }
-
-    public void setCep(String cep) {
-        this.cep = cep;
-    }
-
-    public Integer getNumEndereco() {
-        return numEndereco;
-    }
-
-    public void setNumEndereco(Integer numEndereco) {
-        this.numEndereco = numEndereco;
-    }
-
-    public String getComplemento() {
-        return complemento;
-    }
-
-    public void setComplemento(String complemento) {
-        this.complemento = complemento;
-    }
+    public Endereco getEndereco() { return endereco; }
+    public void setEndereco(Endereco endereco) { this.endereco = endereco; }
 }

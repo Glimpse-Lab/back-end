@@ -72,13 +72,13 @@ public class ClienteService {
     }
 
     public ClienteValidacaoResponse validarClienteDuplicado(ClienteValidacaoRequest request) {
-        var clienteOptional = repository.findByEmailOrCelular(request.getEmail(), request.getCelular());
-        
-        if (clienteOptional.isPresent()) {
-            ClienteResponse clienteResponse = mapearParaResponse(clienteOptional.get());
-            return ClienteValidacaoResponse.clienteEncontrado(clienteResponse);
+        // Priorizar verificação por e-mail. Se houver cliente com mesmo e-mail, considerar duplicado.
+        var clientePorEmail = repository.findByEmail(request.getEmail());
+        if (clientePorEmail.isPresent()) {
+            return ClienteValidacaoResponse.clienteEncontrado(mapearParaResponse(clientePorEmail.get()));
         }
-        
+
+        // Se não existir por e-mail, não considerar duplicado (permitir criação mesmo que celular coincida).
         return ClienteValidacaoResponse.clienteNaoEncontrado();
     }
 

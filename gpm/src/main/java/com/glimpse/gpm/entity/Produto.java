@@ -1,92 +1,63 @@
 package com.glimpse.gpm.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 
 @Entity
+@Table(name = "produto")
 public class Produto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "O nome do produto é obrigatório")
+    @NotBlank
     private String nome;
-    @NotBlank(message = "A descrição do produto é obrigatório")
+
+    @NotBlank
+    @Column(columnDefinition = "TEXT")
     private String descricao;
-    @NotBlank(message = "O preço do produto é obrigatório")
-    @Min(value = 0, message = "O preço deve ser maior ou igual a zero")
+
+    @NotNull
+    @Min(0)
     private Double preco;
-    @NotBlank(message = "Quantidade em estoque é obrigatório")
-    @Min(value = 0, message = "A quantidade em estoque deve ser maior ou igual a zero")
+
+    @NotNull
+    @Min(0)
     private Integer quantidadeEstoque;
-    @NotBlank(message = "A categoria do produto é obrigatório")
-//    private Categoria categoria;
-//
-//    private GaleriaPortfolio galerias;
-//
-//    public GaleriaPortfolio getGalerias() {
-//        return galerias;
-//    }
-//
-//    public void setGalerias(GaleriaPortfolio galerias) {
-//        this.galerias = galerias;
-//    }
-//
-//    public void setCategoria(Categoria categoria) {
-//        this.categoria = categoria;
-//    }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    @Column(columnDefinition = "TEXT")
+    private String especificacaoTecnica;
 
+    private String imagemUrl;
 
-    public Long getId() {
-        return id;
-    }
+    @ManyToOne
+    @JoinColumn(name = "categoria_id")
+    private Categoria categoria;
 
-    public String getNome() {
-        return nome;
-    }
+    public Produto() {}
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public String getDescricao() {
-        return descricao;
-    }
+    public String getNome() { return nome; }
+    public void setNome(String nome) { this.nome = nome; }
 
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
-    }
+    public String getDescricao() { return descricao; }
+    public void setDescricao(String descricao) { this.descricao = descricao; }
 
-    public Double getPreco() {
-        return preco;
-    }
+    public Double getPreco() { return preco; }
+    public void setPreco(Double preco) { this.preco = preco; }
 
-    public void setPreco(Double preco) {
-        this.preco = preco;
-    }
+    public Integer getQuantidadeEstoque() { return quantidadeEstoque; }
+    public void setQuantidadeEstoque(Integer quantidadeEstoque) { this.quantidadeEstoque = quantidadeEstoque; }
 
-    public Integer getQuantidadeEstoque() {
-        return quantidadeEstoque;
-    }
+    public String getEspecificacaoTecnica() { return especificacaoTecnica; }
+    public void setEspecificacaoTecnica(String especificacaoTecnica) { this.especificacaoTecnica = especificacaoTecnica; }
 
-    public void setQuantidadeEstoque(Integer quantidadeEstoque) {
-        this.quantidadeEstoque = quantidadeEstoque;
-    }
-//
-//    public String getCategoria() {
-//        return categoria;
-//    }
-//
-//    public void setCategoria(String categoria) {
-//        this.categoria = categoria;
-//    }
+    public String getImagemUrl() { return imagemUrl; }
+    public void setImagemUrl(String imagemUrl) { this.imagemUrl = imagemUrl; }
+
+    public Categoria getCategoria() { return categoria; }
+    public void setCategoria(Categoria categoria) { this.categoria = categoria; }
 }

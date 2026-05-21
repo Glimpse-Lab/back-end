@@ -1,6 +1,7 @@
 package com.glimpse.gpm.controller;
 
 import com.glimpse.gpm.config.ApiErrorResponses;
+import com.glimpse.gpm.entity.Categoria;
 import com.glimpse.gpm.entity.Produto;
 import com.glimpse.gpm.service.ProdutoService;
 import com.glimpse.gpm.dto.produto.ProdutoRequest;
@@ -37,10 +38,13 @@ public class ProdutoController {
         produto.setDescricao(produtoRequest.getDescricao());
         produto.setPreco(produtoRequest.getPreco());
         produto.setQuantidadeEstoque(produtoRequest.getQuantidadeEstoque());
+        produto.setEspecificacaoTecnica(produtoRequest.getEspecificacaoTecnica());
+        produto.setImagemUrl(produtoRequest.getImagemUrl());
+        produto.setCategoria(produtoRequest.getCategoriaId() != null ? new Categoria(produtoRequest.getCategoriaId()) : null);
 
         Produto produtoSalvo = service.salvar(produto);
         ProdutoResponse response = new ProdutoResponse(produtoSalvo.getId(), produtoSalvo.getNome(), produtoSalvo.getDescricao(),
-                produtoSalvo.getPreco(), produtoSalvo.getQuantidadeEstoque());
+                produtoSalvo.getPreco(), produtoSalvo.getQuantidadeEstoque(), produtoSalvo.getEspecificacaoTecnica(), produtoSalvo.getCategoria() != null ? produtoSalvo.getCategoria().getId() : null);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -55,7 +59,9 @@ public class ProdutoController {
                         produto.getNome(),
                         produto.getDescricao(),
                         produto.getPreco(),
-                        produto.getQuantidadeEstoque()
+                        produto.getQuantidadeEstoque(),
+                        produto.getEspecificacaoTecnica(),
+                        produto.getCategoria() != null ? produto.getCategoria().getId() : null
                 ))
                 .toList();
 
@@ -69,7 +75,8 @@ public class ProdutoController {
 
         if (produtoEncontrado.isPresent()) {
             Produto p = produtoEncontrado.get();
-            ProdutoResponse response = new ProdutoResponse(p.getId(), p.getNome(), p.getDescricao(), p.getPreco(), p.getQuantidadeEstoque());
+            ProdutoResponse response = new ProdutoResponse(p.getId(), p.getNome(), p.getDescricao(), p.getPreco(), p.getQuantidadeEstoque(),
+                    p.getEspecificacaoTecnica(), p.getCategoria() != null ? p.getCategoria().getId() : null);
             return ResponseEntity.ok(response);
         } else {
             return ResponseEntity.notFound().build();
@@ -84,11 +91,15 @@ public class ProdutoController {
         produto.setDescricao(produtoRequest.getDescricao());
         produto.setPreco(produtoRequest.getPreco());
         produto.setQuantidadeEstoque(produtoRequest.getQuantidadeEstoque());
+        produto.setEspecificacaoTecnica(produtoRequest.getEspecificacaoTecnica());
+        produto.setImagemUrl(produtoRequest.getImagemUrl());
+        produto.setCategoria(produtoRequest.getCategoriaId() != null ? new Categoria(produtoRequest.getCategoriaId()) : null);
 
         Produto produtoAtualizado = service.atualizar(id, produto);
         ProdutoResponse response = new ProdutoResponse(produtoAtualizado.getId(), produtoAtualizado.getNome(),
                 produtoAtualizado.getDescricao(), produtoAtualizado.getPreco(),
-                produtoAtualizado.getQuantidadeEstoque());
+                produtoAtualizado.getQuantidadeEstoque(),
+                produtoAtualizado.getEspecificacaoTecnica(), produtoAtualizado.getCategoria() != null ? produtoAtualizado.getCategoria().getId() : null);
         return ResponseEntity.ok(response);
     }
 

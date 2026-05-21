@@ -1,9 +1,11 @@
 package com.glimpse.gpm.service;
 
+import com.glimpse.gpm.entity.Categoria;
 import com.glimpse.gpm.entity.Produto;
 import com.glimpse.gpm.exception.DadosInvalidosException;
 import com.glimpse.gpm.exception.RecursoNaoEncontradoException;
 import com.glimpse.gpm.repository.ProdutoRepository;
+import com.glimpse.gpm.repository.CategoriaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,9 +15,11 @@ import java.util.Optional;
 public class ProdutoService {
 
     private final ProdutoRepository repository;
+    private final CategoriaRepository categoriaRepository;
 
-    public ProdutoService(ProdutoRepository repository) {
+    public ProdutoService(ProdutoRepository repository, CategoriaRepository categoriaRepository) {
         this.repository = repository;
+        this.categoriaRepository = categoriaRepository;
     }
 
     public Produto salvar(Produto produto) {
@@ -31,6 +35,21 @@ public class ProdutoService {
         if (repository.existsByNome(produto.getNome())) {
             throw new DadosInvalidosException("Já existe um produto cadastrado com esse nome.");
         }
+        if (produto.getCategoria() == null || produto.getCategoria().getId() == null) {
+            throw new DadosInvalidosException("A categoria do produto é obrigatória.");
+        }
+
+        Long catId = produto.getCategoria().getId();
+        var categoriaOpt = categoriaRepository.findById(catId);
+        if (categoriaOpt.isEmpty()) {
+            throw new RecursoNaoEncontradoException("Categoria não encontrada para o ID informado.");
+        }
+        // replace transient Categoria with managed entity
+        produto.setCategoria(categoriaOpt.get());
+        if (produto.getEspecificacaoTecnica() != null && produto.getEspecificacaoTecnica().length() > 1000) {
+            throw new DadosInvalidosException("A especificação técnica não pode exceder 1000 caracteres.");
+        }
+
 
         return repository.save(produto);
     }
@@ -60,6 +79,9 @@ public class ProdutoService {
         produtoBanco.setDescricao(produtoAtualizado.getDescricao());
         produtoBanco.setPreco(produtoAtualizado.getPreco());
         produtoBanco.setQuantidadeEstoque(produtoAtualizado.getQuantidadeEstoque());
+        produtoBanco.setEspecificacaoTecnica(produtoAtualizado.getEspecificacaoTecnica());
+        produtoBanco.setImagemUrl(produtoAtualizado.getImagemUrl());
+        produtoBanco.setCategoria(produtoAtualizado.getCategoria());
 
         return repository.save(produtoBanco);
     }
@@ -70,5 +92,9 @@ public class ProdutoService {
             return true;
         }
         return false;
+    }
+
+    public Categoria buscarCategoriaPorId(Long categoriaId) {
+        return categoriaRepository.findById(categoriaId).orElse(null);
     }
 }

@@ -1,5 +1,6 @@
 package com.glimpse.gpm.dto.projeto;
 
+import com.glimpse.gpm.entity.Categoria;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
@@ -22,8 +23,14 @@ public class ProjetoResponse {
     @Schema(description = "Lista de URLs das fotos do projeto", example = "https://site.com/img1.jpg, https://site.com/img2.jpg")
     private String imagensUrls;
 
-    @Schema(description = "Categoria para filtro na galeria", example = "Fachadas")
-    private String categoria;
+    @Schema(description = "Refencia de chave da categoria", example = "1")
+    private Long categoriaId;
+
+    @Schema(description = "Nome da categoria do projeto", example = "Fachada")
+    private String categoriaNome;
+
+    @Schema(description = "Materiais utilizados no projeto", example = "Vidro refletivo prata, estrutura de alumínio linha Gold")
+    private String materiaisUtilizados;
 
     @Schema(description = "Data em que o projeto foi executado", example = "2026-03-15T00:00:00")
     private LocalDateTime dataProjeto;
@@ -37,19 +44,26 @@ public class ProjetoResponse {
     public ProjetoResponse() {
     }
 
-    public ProjetoResponse(Long id, String titulo, String descricao, String localizacao,
-                           String imagensUrls, String categoria, LocalDateTime dataProjeto,
-                           LocalDateTime dataCriacao, LocalDateTime dataAtualizacao) {
+    public ProjetoResponse(Long id, String titulo, String descricao, String localizacao, String imagensUrls, Long categoriaId, String categoriaNome, String materiaisUtilizados, LocalDateTime dataProjeto, LocalDateTime dataCriacao, LocalDateTime dataAtualizacao) {
         this.id = id;
         this.titulo = titulo;
         this.descricao = descricao;
         this.localizacao = localizacao;
         this.imagensUrls = imagensUrls;
-        this.categoria = categoria;
+        this.categoriaId = categoriaId;
+        this.categoriaNome = categoriaNome;
+        this.materiaisUtilizados = materiaisUtilizados;
         this.dataProjeto = dataProjeto;
         this.dataCriacao = dataCriacao;
         this.dataAtualizacao = dataAtualizacao;
     }
+
+    public ProjetoResponse(Long id, String titulo, String descricao, String localizacao, String imagensUrls, Categoria categoria, LocalDateTime dataProjeto, LocalDateTime dataCriacao, LocalDateTime dataAtualizacao, Categoria categoria1) {
+    }
+
+    public ProjetoResponse(Long id, String titulo, String descricao, String localizacao, String imagensUrls, Categoria categoria, LocalDateTime dataProjeto, LocalDateTime dataCriacao, LocalDateTime dataAtualizacao) {
+    }
+
 
     // Getters e Setters
     public Long getId() {
@@ -92,12 +106,28 @@ public class ProjetoResponse {
         this.imagensUrls = imagensUrls;
     }
 
-    public String getCategoria() {
-        return categoria;
+    public String getCategoriaNome() {
+        return categoriaNome;
     }
 
-    public void setCategoria(String categoria) {
-        this.categoria = categoria;
+    public Long getCategoriaId() {
+        return categoriaId;
+    }
+
+    public String getMateriaisUtilizados() {
+        return materiaisUtilizados;
+    }
+
+    public void setMateriaisUtilizados(String materiaisUtilizados) {
+        this.materiaisUtilizados = materiaisUtilizados;
+    }
+
+    public void setCategoriaId(Long categoriaId) {
+        this.categoriaId = categoriaId;
+    }
+
+    public void setCategoriaNome(String categoriaNome) {
+        this.categoriaNome = categoriaNome;
     }
 
     public LocalDateTime getDataProjeto() {

@@ -28,6 +28,18 @@ public class OrcamentoRequest {
     @Schema(description = "Complemento do endereço (apartamento, bloco, etc.)", example = "Apto 45")
     private String complemento;
 
+    @Schema(description = "Rua do endereço de instalação (preenchido automaticamente a partir do CEP, mas pode ser editado)", example = "Rua da Consolação")
+    private String rua;
+
+    @Schema(description = "Bairro do endereço de instalação (preenchido automaticamente a partir do CEP, mas pode ser editado)", example = "Centro")
+    private String bairro;
+
+    @Schema(description = "Cidade do endereço de instalação (preenchido automaticamente a partir do CEP, mas pode ser editado)", example = "São Paulo")
+    private String cidade;
+
+    @Schema(description = "Estado do endereço de instalação (preenchido automaticamente a partir do CEP, mas pode ser editado)", example = "SP")
+    private String estado;
+
     public OrcamentoRequest() {}
 
     public Long getClienteId() { return clienteId; }
@@ -44,4 +56,18 @@ public class OrcamentoRequest {
 
     public String getComplemento() { return complemento; }
     public void setComplemento(String complemento) { this.complemento = complemento; }
+
+    public String getRua() { return rua; }
+    public void setRua(String rua) { this.rua = rua; }
+
+    public String getBairro() { return bairro; }
+    public void setBairro(String bairro) { this.bairro = bairro; }
+
+    public String getCidade() { return cidade; }
+    public void setCidade(String cidade) { this.cidade = cidade; }
+
+    public String getEstado() { return estado; }
+    public void setEstado(String estado) { this.estado = estado; }
+
+
 }

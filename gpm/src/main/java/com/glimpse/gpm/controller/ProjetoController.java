@@ -37,7 +37,8 @@ public class ProjetoController {
         projeto.setDescricao(projetoRequest.getDescricao());
         projeto.setLocalizacao(projetoRequest.getLocalizacao());
         projeto.setImagensUrls(projetoRequest.getImagensUrls());
-        projeto.setCategoria(projetoRequest.getCategoria());
+        projeto.setCategoria(projetoRequest.getCategoriaId() != null ? new com.glimpse.gpm.entity.Categoria(projetoRequest.getCategoriaId()) : null);
+        projeto.setMateriaisUtilizados(projetoRequest.getMateriaisUtilizados());
         projeto.setDataProjeto(projetoRequest.getDataProjeto());
 
         GaleriaPortfolio projetoSalvo = service.salvar(projeto);
@@ -50,7 +51,8 @@ public class ProjetoController {
                 projetoSalvo.getCategoria(),
                 projetoSalvo.getDataProjeto(),
                 projetoSalvo.getDataCriacao(),
-                projetoSalvo.getDataAtualizacao()
+                projetoSalvo.getDataAtualizacao(),
+                projetoSalvo.getCategoria()
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -110,7 +112,8 @@ public class ProjetoController {
             projeto.setDescricao(projetoRequest.getDescricao());
             projeto.setLocalizacao(projetoRequest.getLocalizacao());
             projeto.setImagensUrls(projetoRequest.getImagensUrls());
-            projeto.setCategoria(projetoRequest.getCategoria());
+            projeto.setCategoria(projetoRequest.getCategoriaId() != null ? new com.glimpse.gpm.entity.Categoria(projetoRequest.getCategoriaId()) : null);
+            projeto.setMateriaisUtilizados(projetoRequest.getMateriaisUtilizados());
             projeto.setDataProjeto(projetoRequest.getDataProjeto());
 
             GaleriaPortfolio projetoAtualizado = service.atualizar(id, projeto);
