@@ -43,9 +43,6 @@ public class OrcamentoService {
         Orcamento orcamento = new Orcamento();
         orcamento.setCliente(cliente);
         orcamento.setDescricaoProjeto(request.getDescricaoProjeto());
-        orcamento.setCep(request.getCep());
-        orcamento.setNumEndereco(request.getNumEndereco());
-        orcamento.setComplemento(request.getComplemento());
 
         // criar e persistir Endereco normalizado
         Endereco endereco = new Endereco();
@@ -90,9 +87,6 @@ public class OrcamentoService {
         }
 
         orcamentoBanco.setDescricaoProjeto(request.getDescricaoProjeto());
-        orcamentoBanco.setCep(request.getCep());
-        orcamentoBanco.setNumEndereco(request.getNumEndereco());
-        orcamentoBanco.setComplemento(request.getComplemento());
 
         // atualizar ou criar endereco associado
         Endereco enderecoBanco = orcamentoBanco.getEndereco();
@@ -159,9 +153,6 @@ public class OrcamentoService {
         Orcamento orcamento = new Orcamento();
         orcamento.setCliente(cliente);
         orcamento.setDescricaoProjeto(request.getDescricaoProjeto());
-        orcamento.setCep(request.getCep());
-        orcamento.setNumEndereco(request.getNumEndereco());
-        orcamento.setComplemento(request.getComplemento());
 
         Endereco endereco = new Endereco();
         endereco.setCep(request.getCep());
@@ -189,25 +180,16 @@ public class OrcamentoService {
                 orcamento.getCliente().getEmail()
         );
 
-        String rua = null, bairro = null, cidade = null, estado = null;
+        Endereco endereco = orcamento.getEndereco();
         if (orcamento.getEndereco() != null) {
-            rua = orcamento.getEndereco().getRua();
-            bairro = orcamento.getEndereco().getBairro();
-            cidade = orcamento.getEndereco().getCidade();
-            estado = orcamento.getEndereco().getEstado();
+            endereco = orcamento.getEndereco();
         }
 
         return new OrcamentoResponse(
             orcamento.getId(),
             clienteResponse,
             orcamento.getDescricaoProjeto(),
-            orcamento.getCep(),
-            orcamento.getNumEndereco(),
-            orcamento.getComplemento(),
-            rua,
-            bairro,
-            cidade,
-            estado,
+            endereco,
             orcamento.getStatus(),
             orcamento.getDataSolicitacao()
         );

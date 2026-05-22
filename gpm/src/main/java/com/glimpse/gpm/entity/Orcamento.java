@@ -25,13 +25,6 @@ public class Orcamento {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String descricaoProjeto;
 
-    @Column(length = 9)
-    private String cep;
-
-    private Integer numEndereco;
-
-    private String complemento;
-
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "endereco_id")
     private Endereco endereco;
@@ -52,15 +45,6 @@ public class Orcamento {
 
     public String getDescricaoProjeto() { return descricaoProjeto; }
     public void setDescricaoProjeto(String descricaoProjeto) { this.descricaoProjeto = descricaoProjeto; }
-
-    public String getCep() { return cep; }
-    public void setCep(String cep) { this.cep = cep; }
-
-    public Integer getNumEndereco() { return numEndereco; }
-    public void setNumEndereco(Integer numEndereco) { this.numEndereco = numEndereco; }
-
-    public String getComplemento() { return complemento; }
-    public void setComplemento(String complemento) { this.complemento = complemento; }
 
     public Endereco getEndereco() { return endereco; }
     public void setEndereco(Endereco endereco) { this.endereco = endereco; }
