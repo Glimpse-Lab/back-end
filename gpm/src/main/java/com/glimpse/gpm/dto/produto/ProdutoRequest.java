@@ -32,7 +32,6 @@ public class ProdutoRequest {
     private String especificacaoTecnica;
 
     @Schema(description = "URL da imagem do produto", example = "https://exemplo.com/imagem-produto.jpg")
-    @NotBlank(message = "A URL da imagem é obrigatória")
     private String imagemUrl;
 
     @Schema(description = "ID da categoria do produto", example = "2")

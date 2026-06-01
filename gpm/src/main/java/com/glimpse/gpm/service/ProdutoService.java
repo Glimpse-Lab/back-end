@@ -7,6 +7,12 @@ import com.glimpse.gpm.exception.RecursoNaoEncontradoException;
 import com.glimpse.gpm.repository.ProdutoRepository;
 import com.glimpse.gpm.repository.CategoriaRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.UUID;
 
 import java.util.List;
 import java.util.Optional;
@@ -96,5 +102,23 @@ public class ProdutoService {
 
     public Categoria buscarCategoriaPorId(Long categoriaId) {
         return categoriaRepository.findById(categoriaId).orElse(null);
+    }
+
+    public String salvarArquivoLocal(MultipartFile file) {
+        if (file == null || file.isEmpty()) return null;
+        try {
+            Path pastaUpload = Paths.get("./gpm_uploads");
+            if (!Files.exists(pastaUpload)) {
+                Files.createDirectories(pastaUpload);
+            }
+            String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+            Path filePath = pastaUpload.resolve(fileName);
+
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+            return "http://localhost:8080/uploads/" + fileName;
+        } catch (Exception e) {
+            throw new RuntimeException("Falha ao salvar a imagem no disco", e);
+        }
     }
 }
