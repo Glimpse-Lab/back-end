@@ -1,6 +1,7 @@
 package com.glimpse.gpm.controller;
 
 import com.glimpse.gpm.config.ApiErrorResponses;
+import com.glimpse.gpm.entity.Categoria;
 import com.glimpse.gpm.entity.GaleriaPortfolio;
 import com.glimpse.gpm.service.ProjetoService;
 import com.glimpse.gpm.dto.projeto.ProjetoRequest;
@@ -9,8 +10,10 @@ import com.glimpse.gpm.exception.RecursoNaoEncontradoException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import jakarta.validation.Valid;
 
 import java.util.List;
@@ -30,16 +33,28 @@ public class ProjetoController {
     }
 
     @Operation(summary = "Adicionar projeto ao portfólio", description = "Requer autenticação JWT. Registra um novo projeto finalizado com suas respectivas imagens e categorias.")
-    @PostMapping
-    public ResponseEntity<ProjetoResponse> criar(@Valid @RequestBody ProjetoRequest projetoRequest) {
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ProjetoResponse> criar(
+            @Valid @ModelAttribute ProjetoRequest projetoRequest,
+            @RequestParam(value = "file", required = false) MultipartFile file) {
+
         GaleriaPortfolio projeto = new GaleriaPortfolio();
         projeto.setTitulo(projetoRequest.getTitulo());
         projeto.setDescricao(projetoRequest.getDescricao());
         projeto.setLocalizacao(projetoRequest.getLocalizacao());
-        projeto.setImagensUrls(projetoRequest.getImagensUrls());
-        projeto.setCategoria(projetoRequest.getCategoriaId() != null ? new com.glimpse.gpm.entity.Categoria(projetoRequest.getCategoriaId()) : null);
         projeto.setMateriaisUtilizados(projetoRequest.getMateriaisUtilizados());
         projeto.setDataProjeto(projetoRequest.getDataProjeto());
+
+        // Blindagem do vínculo da Categoria
+        if (projetoRequest.getCategoriaId() != null) {
+            Categoria cat = new Categoria();
+            cat.setId(projetoRequest.getCategoriaId());
+            projeto.setCategoria(cat);
+        }
+
+        // Salva o arquivo no disco local e obtém a URL para o front-end
+        String urlGerada = service.salvarArquivoLocal(file);
+        projeto.setImagensUrls(urlGerada != null ? urlGerada : projetoRequest.getImagensUrls());
 
         GaleriaPortfolio projetoSalvo = service.salvar(projeto);
         ProjetoResponse response = new ProjetoResponse(
@@ -104,17 +119,29 @@ public class ProjetoController {
     }
 
     @Operation(summary = "Atualizar projeto", description = "Requer autenticação JWT. Atualiza as informações de um projeto existente na galeria.")
-    @PutMapping("/{id}")
-    public ResponseEntity<ProjetoResponse> atualizar(@PathVariable Long id, @Valid @RequestBody ProjetoRequest projetoRequest) {
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ProjetoResponse> atualizar(
+            @PathVariable Long id,
+            @Valid @ModelAttribute ProjetoRequest projetoRequest,
+            @RequestParam(value = "file", required = false) MultipartFile file) {
         try {
             GaleriaPortfolio projeto = new GaleriaPortfolio();
             projeto.setTitulo(projetoRequest.getTitulo());
             projeto.setDescricao(projetoRequest.getDescricao());
             projeto.setLocalizacao(projetoRequest.getLocalizacao());
-            projeto.setImagensUrls(projetoRequest.getImagensUrls());
-            projeto.setCategoria(projetoRequest.getCategoriaId() != null ? new com.glimpse.gpm.entity.Categoria(projetoRequest.getCategoriaId()) : null);
             projeto.setMateriaisUtilizados(projetoRequest.getMateriaisUtilizados());
             projeto.setDataProjeto(projetoRequest.getDataProjeto());
+
+            // Blindagem do vínculo da Categoria
+            if (projetoRequest.getCategoriaId() != null) {
+                Categoria cat = new Categoria();
+                cat.setId(projetoRequest.getCategoriaId());
+                projeto.setCategoria(cat);
+            }
+
+            // Se mandou imagem nova, salva. Se não, mantém a existente
+            String urlGerada = service.salvarArquivoLocal(file);
+            projeto.setImagensUrls(urlGerada != null ? urlGerada : projetoRequest.getImagensUrls());
 
             GaleriaPortfolio projetoAtualizado = service.atualizar(id, projeto);
             ProjetoResponse response = new ProjetoResponse(

@@ -17,6 +17,7 @@ import jakarta.validation.Valid;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Tag(name = "Produtos", description = "Gestão de estoque e catálogo de produtos da GPM Esquadrias")
 @RestController
@@ -42,14 +43,30 @@ public class ProdutoController {
         produto.setPreco(produtoRequest.getPreco());
         produto.setQuantidadeEstoque(produtoRequest.getQuantidadeEstoque());
         produto.setEspecificacaoTecnica(produtoRequest.getEspecificacaoTecnica());
-        produto.setCategoria(produtoRequest.getCategoriaId() != null ? new Categoria(produtoRequest.getCategoriaId()) : null);
+
+        // Blindagem do vínculo da Categoria
+        if (produtoRequest.getCategoriaId() != null) {
+            Categoria cat = new Categoria();
+            cat.setId(produtoRequest.getCategoriaId());
+            produto.setCategoria(cat);
+        }
 
         String urlGerada = service.salvarArquivoLocal(file);
         produto.setImagemUrl(urlGerada != null ? urlGerada : produtoRequest.getImagemUrl());
 
         Produto produtoSalvo = service.salvar(produto);
-        ProdutoResponse response = new ProdutoResponse(produtoSalvo.getId(), produtoSalvo.getNome(), produtoSalvo.getDescricao(),
-                produtoSalvo.getPreco(), produtoSalvo.getQuantidadeEstoque(), produtoSalvo.getEspecificacaoTecnica(), produtoSalvo.getCategoria() != null ? produtoSalvo.getCategoria().getId() : null);
+
+        ProdutoResponse response = new ProdutoResponse(
+                produtoSalvo.getId(),
+                produtoSalvo.getNome(),
+                produtoSalvo.getDescricao(),
+                produtoSalvo.getPreco(),
+                produtoSalvo.getQuantidadeEstoque(),
+                produtoSalvo.getEspecificacaoTecnica(),
+                produtoSalvo.getCategoria() != null ? produtoSalvo.getCategoria().getId() : null,
+                produtoSalvo.getCategoria() != null ? produtoSalvo.getCategoria().getNome() : null,
+                produtoSalvo.getImagemUrl()
+        );
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -59,16 +76,18 @@ public class ProdutoController {
         List<Produto> produtos = service.listarProdutos();
 
         List<ProdutoResponse> responses = produtos.stream()
-                .map(produto -> new ProdutoResponse(
-                        produto.getId(),
-                        produto.getNome(),
-                        produto.getDescricao(),
-                        produto.getPreco(),
-                        produto.getQuantidadeEstoque(),
-                        produto.getEspecificacaoTecnica(),
-                        produto.getCategoria() != null ? produto.getCategoria().getId() : null
+                .map(p -> new ProdutoResponse(
+                        p.getId(),
+                        p.getNome(),
+                        p.getDescricao(),
+                        p.getPreco(),
+                        p.getQuantidadeEstoque(),
+                        p.getEspecificacaoTecnica(),
+                        p.getCategoria() != null ? p.getCategoria().getId() : null,
+                        p.getCategoria() != null ? p.getCategoria().getNome() : null,
+                        p.getImagemUrl()
                 ))
-                .toList();
+                .collect(Collectors.toList());
 
         return ResponseEntity.ok(responses);
     }
@@ -80,8 +99,17 @@ public class ProdutoController {
 
         if (produtoEncontrado.isPresent()) {
             Produto p = produtoEncontrado.get();
-            ProdutoResponse response = new ProdutoResponse(p.getId(), p.getNome(), p.getDescricao(), p.getPreco(), p.getQuantidadeEstoque(),
-                    p.getEspecificacaoTecnica(), p.getCategoria() != null ? p.getCategoria().getId() : null);
+            ProdutoResponse response = new ProdutoResponse(
+                    p.getId(),
+                    p.getNome(),
+                    p.getDescricao(),
+                    p.getPreco(),
+                    p.getQuantidadeEstoque(),
+                    p.getEspecificacaoTecnica(),
+                    p.getCategoria() != null ? p.getCategoria().getId() : null,
+                    p.getCategoria() != null ? p.getCategoria().getNome() : null,
+                    p.getImagemUrl()
+            );
             return ResponseEntity.ok(response);
         } else {
             return ResponseEntity.notFound().build();
@@ -101,16 +129,30 @@ public class ProdutoController {
         produto.setPreco(produtoRequest.getPreco());
         produto.setQuantidadeEstoque(produtoRequest.getQuantidadeEstoque());
         produto.setEspecificacaoTecnica(produtoRequest.getEspecificacaoTecnica());
-        produto.setCategoria(produtoRequest.getCategoriaId() != null ? new Categoria(produtoRequest.getCategoriaId()) : null);
+
+        // Blindagem do vínculo da Categoria
+        if (produtoRequest.getCategoriaId() != null) {
+            Categoria cat = new Categoria();
+            cat.setId(produtoRequest.getCategoriaId());
+            produto.setCategoria(cat);
+        }
 
         String urlGerada = service.salvarArquivoLocal(file);
         produto.setImagemUrl(urlGerada != null ? urlGerada : produtoRequest.getImagemUrl());
 
-        Produto produtoAtualizado = service.atualizar(id, produto);
-        ProdutoResponse response = new ProdutoResponse(produtoAtualizado.getId(), produtoAtualizado.getNome(),
-                produtoAtualizado.getDescricao(), produtoAtualizado.getPreco(),
-                produtoAtualizado.getQuantidadeEstoque(),
-                produtoAtualizado.getEspecificacaoTecnica(), produtoAtualizado.getCategoria() != null ? produtoAtualizado.getCategoria().getId() : null);
+        Produto p = service.atualizar(id, produto);
+
+        ProdutoResponse response = new ProdutoResponse(
+                p.getId(),
+                p.getNome(),
+                p.getDescricao(),
+                p.getPreco(),
+                p.getQuantidadeEstoque(),
+                p.getEspecificacaoTecnica(),
+                p.getCategoria() != null ? p.getCategoria().getId() : null,
+                p.getCategoria() != null ? p.getCategoria().getNome() : null,
+                p.getImagemUrl()
+        );
         return ResponseEntity.ok(response);
     }
 

@@ -25,7 +25,7 @@ public class ProjetoRequest {
     private String imagensUrls;
 
     @Schema(description = "Categoria para filtro na galeria (Ex: Janelas, Portas, Fachadas)", example = "Fachadas")
-    @NotBlank(message = "Categoria do projeto é obrigatória")
+    @NotNull(message = "Categoria do projeto é obrigatória")
     private Long categoriaId;
 
     @Schema(description = "Material utilizado no projeto, para filtro na galeria (Ex: Vidro, Alumínio, Aço)", example = "Vidro")

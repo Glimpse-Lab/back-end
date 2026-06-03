@@ -59,11 +59,35 @@ public class ProjetoResponse {
     }
 
     public ProjetoResponse(Long id, String titulo, String descricao, String localizacao, String imagensUrls, Categoria categoria, LocalDateTime dataProjeto, LocalDateTime dataCriacao, LocalDateTime dataAtualizacao, Categoria categoria1) {
+        this.id = id;
+        this.titulo = titulo;
+        this.descricao = descricao;
+        this.localizacao = localizacao;
+        this.imagensUrls = imagensUrls;
+        if (categoria != null) {
+            this.categoriaId = categoria.getId();
+            this.categoriaNome = categoria.getNome();
+        }
+        this.dataProjeto = dataProjeto;
+        this.dataCriacao = dataCriacao;
+        this.dataAtualizacao = dataAtualizacao;
     }
 
+    // O outro construtor do Controller, também preenchido corretamente
     public ProjetoResponse(Long id, String titulo, String descricao, String localizacao, String imagensUrls, Categoria categoria, LocalDateTime dataProjeto, LocalDateTime dataCriacao, LocalDateTime dataAtualizacao) {
+        this.id = id;
+        this.titulo = titulo;
+        this.descricao = descricao;
+        this.localizacao = localizacao;
+        this.imagensUrls = imagensUrls;
+        if (categoria != null) {
+            this.categoriaId = categoria.getId();
+            this.categoriaNome = categoria.getNome();
+        }
+        this.dataProjeto = dataProjeto;
+        this.dataCriacao = dataCriacao;
+        this.dataAtualizacao = dataAtualizacao;
     }
-
 
     // Getters e Setters
     public Long getId() {
@@ -153,4 +177,5 @@ public class ProjetoResponse {
     public void setDataAtualizacao(LocalDateTime dataAtualizacao) {
         this.dataAtualizacao = dataAtualizacao;
     }
+
 }

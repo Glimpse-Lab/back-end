@@ -6,10 +6,16 @@ import com.glimpse.gpm.repository.CategoriaRepository;
 import com.glimpse.gpm.exception.RecursoNaoEncontradoException;
 import com.glimpse.gpm.repository.ProjetoRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class ProjetoService {
@@ -25,10 +31,14 @@ public class ProjetoService {
     public GaleriaPortfolio salvar(GaleriaPortfolio projeto) {
         projeto.setDataCriacao(LocalDateTime.now());
         projeto.setDataAtualizacao(LocalDateTime.now());
-        // attach managed Categoria if provided
+
         if (projeto.getCategoria() != null && projeto.getCategoria().getId() != null) {
             var catOpt = categoriaRepository.findById(projeto.getCategoria().getId());
-            catOpt.ifPresent(projeto::setCategoria);
+            if (catOpt.isPresent()) {
+                projeto.setCategoria(catOpt.get());
+            } else {
+                throw new RuntimeException("Categoria não encontrada para o ID: " + projeto.getCategoria().getId());
+            }
         }
         return repository.save(projeto);
     }
@@ -72,5 +82,21 @@ public class ProjetoService {
             return true;
         }
         return false;
+    }
+
+    public String salvarArquivoLocal(MultipartFile file) {
+        if (file == null || file.isEmpty()) return null;
+        try {
+            Path pastaUpload = Paths.get("./gpm_uploads");
+            if (!Files.exists(pastaUpload)) {
+                Files.createDirectories(pastaUpload);
+            }
+            String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+            Path filePath = pastaUpload.resolve(fileName);
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            return "http://localhost:8080/uploads/" + fileName;
+        } catch (Exception e) {
+            throw new RuntimeException("Falha ao salvar a imagem do projeto no disco", e);
+        }
     }
 }
