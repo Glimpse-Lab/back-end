@@ -4,22 +4,25 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.glimpse.gpm.dto.cliente.ClienteResponse;
 import com.glimpse.gpm.dto.orcamento.OrcamentoComClienteRequest;
 import com.glimpse.gpm.dto.orcamento.OrcamentoRequest;
 import com.glimpse.gpm.dto.orcamento.OrcamentoResponse;
 import com.glimpse.gpm.entity.Cliente;
+import com.glimpse.gpm.entity.Endereco;
 import com.glimpse.gpm.entity.Orcamento;
 import com.glimpse.gpm.enums.StatusOrcamento;
 import com.glimpse.gpm.mapper.StatusOrcamentoMapper;
 import com.glimpse.gpm.exception.DadosInvalidosException;
 import com.glimpse.gpm.exception.RecursoNaoEncontradoException;
+import com.glimpse.gpm.event.OrcamentoEnviadoEvent;
 import com.glimpse.gpm.repository.ClienteRepository;
 import com.glimpse.gpm.repository.OrcamentoRepository;
 import com.glimpse.gpm.repository.EnderecoRepository;
-import com.glimpse.gpm.entity.Endereco;
 
 @Service
 public class OrcamentoService {
@@ -27,14 +30,17 @@ public class OrcamentoService {
     private final OrcamentoRepository orcamentoRepository;
     private final ClienteRepository clienteRepository;
     private final EnderecoRepository enderecoRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     // Injeção dos repositórios necessários
-    public OrcamentoService(OrcamentoRepository orcamentoRepository, ClienteRepository clienteRepository, EnderecoRepository enderecoRepository) {
+    public OrcamentoService(OrcamentoRepository orcamentoRepository, ClienteRepository clienteRepository, EnderecoRepository enderecoRepository, ApplicationEventPublisher eventPublisher) {
         this.orcamentoRepository = orcamentoRepository;
         this.clienteRepository = clienteRepository;
         this.enderecoRepository = enderecoRepository;
+        this.eventPublisher = eventPublisher;
     }
 
+    @Transactional
     public OrcamentoResponse salvar(OrcamentoRequest request) {
         // Busca o cliente dono do orçamento
         Cliente cliente = clienteRepository.findById(request.getClienteId())
@@ -60,7 +66,9 @@ public class OrcamentoService {
         orcamento.setDataSolicitacao(LocalDateTime.now());
         orcamento.setStatus(StatusOrcamento.PENDENTE);
 
-        return mapearParaResponse(orcamentoRepository.save(orcamento));
+        Orcamento orcamentoSalvo = orcamentoRepository.save(orcamento);
+        publicarEventoOrcamentoEnviado(orcamentoSalvo);
+        return mapearParaResponse(orcamentoSalvo);
     }
 
     public List<OrcamentoResponse> listarOrcamentos() {
@@ -107,14 +115,16 @@ public class OrcamentoService {
         /**
          * Atualiza apenas o status do orçamento
          */
-        public OrcamentoResponse atualizarStatus(Long id, String statusFrontend) {
+    @Transactional
+    public OrcamentoResponse atualizarStatus(Long id, String statusFrontend) {
             Orcamento orcamentoBanco = orcamentoRepository.findById(id)
                     .orElseThrow(() -> new RecursoNaoEncontradoException("Orçamento não encontrado."));
 
             var statusEnum = StatusOrcamentoMapper.fromFrontend(statusFrontend);
             orcamentoBanco.setStatus(statusEnum);
 
-            return mapearParaResponse(orcamentoRepository.save(orcamentoBanco));
+        Orcamento orcamentoSalvo = orcamentoRepository.save(orcamentoBanco);
+        return mapearParaResponse(orcamentoSalvo);
         }
 
     public boolean excluir(Long id) {
@@ -125,6 +135,7 @@ public class OrcamentoService {
         return false;
     }
 
+    @Transactional
     public OrcamentoResponse salvarComCliente(OrcamentoComClienteRequest request) {
         Cliente cliente;
 
@@ -168,7 +179,49 @@ public class OrcamentoService {
         orcamento.setDataSolicitacao(LocalDateTime.now());
         orcamento.setStatus(StatusOrcamento.PENDENTE);
 
-        return mapearParaResponse(orcamentoRepository.save(orcamento));
+        Orcamento orcamentoSalvo = orcamentoRepository.save(orcamento);
+        publicarEventoOrcamentoEnviado(orcamentoSalvo);
+        return mapearParaResponse(orcamentoSalvo);
+    }
+
+    private void publicarEventoOrcamentoEnviado(Orcamento orcamento) {
+        eventPublisher.publishEvent(new OrcamentoEnviadoEvent(
+                orcamento.getId(),
+                orcamento.getCliente().getNome(),
+                orcamento.getCliente().getEmail(),
+                orcamento.getDescricaoProjeto(),
+                formatarEndereco(orcamento.getEndereco()),
+                orcamento.getStatus().name(),
+                orcamento.getDataSolicitacao()
+        ));
+    }
+
+    private String formatarEndereco(Endereco endereco) {
+        if (endereco == null) {
+            return "Endereço não informado";
+        }
+
+        StringBuilder builder = new StringBuilder();
+        if (endereco.getRua() != null && !endereco.getRua().isBlank()) {
+            builder.append(endereco.getRua());
+        }
+        if (endereco.getNumero() != null) {
+            if (!builder.isEmpty()) {
+                builder.append(", ");
+            }
+            builder.append(endereco.getNumero());
+        }
+        if (endereco.getBairro() != null && !endereco.getBairro().isBlank()) {
+            builder.append(" - ").append(endereco.getBairro());
+        }
+        if (endereco.getCidade() != null && !endereco.getCidade().isBlank()) {
+            builder.append(" - ").append(endereco.getCidade());
+        }
+        if (endereco.getEstado() != null && !endereco.getEstado().isBlank()) {
+            builder.append("/").append(endereco.getEstado());
+        }
+
+        return builder.isEmpty() ? "Endereço não informado" : builder.toString();
     }
 
     // Metodo auxiliar de conversão (aninhando o ClienteResponse)

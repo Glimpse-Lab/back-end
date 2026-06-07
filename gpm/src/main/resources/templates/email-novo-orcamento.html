@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Novo orçamento recebido</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+<h2>Novo orçamento recebido</h2>
+<p>Um novo orçamento foi enviado no sistema GPM.</p>
+
+<p><strong>ID:</strong> <span th:text="${orcamentoId}"></span></p>
+<p><strong>Cliente:</strong> <span th:text="${clienteNome}"></span></p>
+<p><strong>E-mail do cliente:</strong> <span th:text="${clienteEmail}"></span></p>
+<p><strong>Status:</strong> <span th:text="${status}"></span></p>
+<p><strong>Data:</strong> <span th:text="${dataSolicitacao}"></span></p>
+<p><strong>Endereço:</strong> <span th:text="${endereco}"></span></p>
+
+<p><strong>Descrição do projeto:</strong></p>
+<div style="padding: 12px; background: #f5f5f5; border-radius: 6px;" th:text="${descricaoProjeto}"></div>
+
+</body>
+</html>
