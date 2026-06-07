@@ -3,18 +3,23 @@ package com.glimpse.gpm.service;
 import com.glimpse.gpm.event.OrcamentoEnviadoEvent;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 @Service
 public class EmailService {
 
     private final JavaMailSender mailSender;
     private final TemplateEngine templateEngine;
+    @Value("${app.base-url:http://localhost:5173}")
+    private String baseUrl;
 
     public EmailService(JavaMailSender mailSender, TemplateEngine templateEngine) {
         this.mailSender = mailSender;
@@ -60,7 +65,12 @@ public class EmailService {
             context.setVariable("descricaoProjeto", event.descricaoProjeto());
             context.setVariable("endereco", event.endereco());
             context.setVariable("status", event.status());
-            context.setVariable("dataSolicitacao", event.dataSolicitacao());
+
+            // Formata a data para exibição no e-mail (ex.: 07/06/2026 às 00:39)
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy 'às' HH:mm").withLocale(new Locale("pt", "BR"));
+            String dataFormatada = event.dataSolicitacao() != null ? event.dataSolicitacao().format(formatter) : "";
+            context.setVariable("dataSolicitacao", dataFormatada);
+            context.setVariable("baseUrl", baseUrl);
 
             String htmlBody = templateEngine.process("email-novo-orcamento", context);
 
