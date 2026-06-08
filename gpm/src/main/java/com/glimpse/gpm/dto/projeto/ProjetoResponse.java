@@ -74,12 +74,13 @@ public class ProjetoResponse {
     }
 
     // O outro construtor do Controller, também preenchido corretamente
-    public ProjetoResponse(Long id, String titulo, String descricao, String localizacao, String imagensUrls, Categoria categoria, LocalDateTime dataProjeto, LocalDateTime dataCriacao, LocalDateTime dataAtualizacao) {
+    public ProjetoResponse(Long id, String titulo, String descricao, String localizacao, String imagensUrls, String materiaisUtilizados, Categoria categoria, LocalDateTime dataProjeto, LocalDateTime dataCriacao, LocalDateTime dataAtualizacao) {
         this.id = id;
         this.titulo = titulo;
         this.descricao = descricao;
         this.localizacao = localizacao;
         this.imagensUrls = imagensUrls;
+        this.materiaisUtilizados = materiaisUtilizados;
         if (categoria != null) {
             this.categoriaId = categoria.getId();
             this.categoriaNome = categoria.getNome();

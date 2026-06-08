@@ -57,17 +57,19 @@ public class ProjetoController {
         projeto.setImagensUrls(urlGerada != null ? urlGerada : projetoRequest.getImagensUrls());
 
         GaleriaPortfolio projetoSalvo = service.salvar(projeto);
+
+        // Passando getMateriaisUtilizados() na criação do response
         ProjetoResponse response = new ProjetoResponse(
                 projetoSalvo.getId(),
                 projetoSalvo.getTitulo(),
                 projetoSalvo.getDescricao(),
                 projetoSalvo.getLocalizacao(),
                 projetoSalvo.getImagensUrls(),
+                projetoSalvo.getMateriaisUtilizados(),
                 projetoSalvo.getCategoria(),
                 projetoSalvo.getDataProjeto(),
                 projetoSalvo.getDataCriacao(),
-                projetoSalvo.getDataAtualizacao(),
-                projetoSalvo.getCategoria()
+                projetoSalvo.getDataAtualizacao()
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -84,6 +86,7 @@ public class ProjetoController {
                         p.getDescricao(),
                         p.getLocalizacao(),
                         p.getImagensUrls(),
+                        p.getMateriaisUtilizados(),
                         p.getCategoria(),
                         p.getDataProjeto(),
                         p.getDataCriacao(),
@@ -107,6 +110,7 @@ public class ProjetoController {
                     p.getDescricao(),
                     p.getLocalizacao(),
                     p.getImagensUrls(),
+                    p.getMateriaisUtilizados(),
                     p.getCategoria(),
                     p.getDataProjeto(),
                     p.getDataCriacao(),
@@ -150,6 +154,7 @@ public class ProjetoController {
                     projetoAtualizado.getDescricao(),
                     projetoAtualizado.getLocalizacao(),
                     projetoAtualizado.getImagensUrls(),
+                    projetoAtualizado.getMateriaisUtilizados(),
                     projetoAtualizado.getCategoria(),
                     projetoAtualizado.getDataProjeto(),
                     projetoAtualizado.getDataCriacao(),
