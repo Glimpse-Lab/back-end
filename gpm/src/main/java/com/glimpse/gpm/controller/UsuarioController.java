@@ -6,6 +6,7 @@ import com.glimpse.gpm.dto.usuario.LoginResponse;
 import com.glimpse.gpm.dto.usuario.RecuperacaoSenhaRequest;
 import com.glimpse.gpm.dto.usuario.RedefinicaoSenhaRequest;
 import com.glimpse.gpm.dto.usuario.UpdateUsuarioRequest;
+import com.glimpse.gpm.dto.usuario.UsuarioCadastroRequest;
 import com.glimpse.gpm.dto.usuario.UsuarioRequest;
 import com.glimpse.gpm.dto.usuario.UsuarioResponse;
 import com.glimpse.gpm.entity.Usuario;
@@ -19,6 +20,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -52,14 +54,36 @@ public class UsuarioController {
         this.autenticacaoService = autenticacaoService;
     }
 
-    @Operation(summary = "Cadastrar novo usuário", description = "Rota pública. Cria um novo administrador/usuário para acesso ao painel do sistema.")
+    @Operation(summary = "Cadastrar novo usuário (cadastro público - papel forçado para PADRAO)", description = "Rota pública. Cria um novo usuário com papel PADRAO para acesso ao painel do sistema.")
     @PostMapping
-    public ResponseEntity<UsuarioResponse> criar(@Valid @RequestBody UsuarioRequest usuarioRequest) {
+    public ResponseEntity<UsuarioResponse> criar(@Valid @RequestBody UsuarioCadastroRequest cadastroRequest) {
+        Usuario usuario = new Usuario();
+        usuario.setNome(cadastroRequest.getNome());
+        usuario.setCpf(cadastroRequest.getCpf());
+        usuario.setEmail(cadastroRequest.getEmail());
+        usuario.setSenha(cadastroRequest.getSenha()); // Senha será criptografada no service
+        usuario.setRole(Role.PADRAO); // Forçado para PADRAO - não aceita role do cliente
+
+        Usuario usuarioSalvo = service.salvar(usuario);
+        UsuarioResponse response = new UsuarioResponse(
+                usuarioSalvo.getId(),
+                usuarioSalvo.getNome(),
+                usuarioSalvo.getCpf(),
+                usuarioSalvo.getEmail(),
+                usuarioSalvo.getRole()
+        );
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @Operation(summary = "Criar novo usuário ADMIN (apenas administradores)", description = "Requer role ADMIN. Cria um novo usuário com papel definido (ADMIN ou PADRAO).")
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/admin")
+    public ResponseEntity<UsuarioResponse> criarAdmin(@Valid @RequestBody UsuarioRequest usuarioRequest) {
         Usuario usuario = new Usuario();
         usuario.setNome(usuarioRequest.getNome());
         usuario.setCpf(usuarioRequest.getCpf());
         usuario.setEmail(usuarioRequest.getEmail());
-        usuario.setSenha(usuarioRequest.getSenha());
+        usuario.setSenha(usuarioRequest.getSenha()); // Senha será criptografada no service
         usuario.setRole(usuarioRequest.getRole() != null ? usuarioRequest.getRole() : Role.PADRAO);
 
         Usuario usuarioSalvo = service.salvar(usuario);
