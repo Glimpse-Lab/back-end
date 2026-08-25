@@ -61,8 +61,8 @@ public class UsuarioController {
         usuario.setNome(cadastroRequest.getNome());
         usuario.setCpf(cadastroRequest.getCpf());
         usuario.setEmail(cadastroRequest.getEmail());
-        usuario.setSenha(cadastroRequest.getSenha()); // Senha será criptografada no service
-        usuario.setRole(Role.PADRAO); // Forçado para PADRAO - não aceita role do cliente
+        usuario.setSenha(cadastroRequest.getSenha());
+        usuario.setRole(Role.PADRAO);
 
         Usuario usuarioSalvo = service.salvar(usuario);
         UsuarioResponse response = new UsuarioResponse(
@@ -83,7 +83,7 @@ public class UsuarioController {
         usuario.setNome(usuarioRequest.getNome());
         usuario.setCpf(usuarioRequest.getCpf());
         usuario.setEmail(usuarioRequest.getEmail());
-        usuario.setSenha(usuarioRequest.getSenha()); // Senha será criptografada no service
+        usuario.setSenha(usuarioRequest.getSenha());
         usuario.setRole(usuarioRequest.getRole() != null ? usuarioRequest.getRole() : Role.PADRAO);
 
         Usuario usuarioSalvo = service.salvar(usuario);
