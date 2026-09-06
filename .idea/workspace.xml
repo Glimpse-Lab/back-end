@@ -3,13 +3,13 @@
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
+  <component name="BackgroundAgentGlobalSettings">
+    <option name="selectedModelId" value="auto" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="81697235-a81f-428b-a5dd-b8285cddd2db" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gpm/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/gpm/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gpm/src/main/java/com/glimpse/gpm/service/EmailService.java" beforeDir="false" afterPath="$PROJECT_DIR$/gpm/src/main/java/com/glimpse/gpm/service/EmailService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gpm/src/main/java/com/glimpse/gpm/service/OrcamentoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/gpm/src/main/java/com/glimpse/gpm/service/OrcamentoService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gpm/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/gpm/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gpm/src/main/java/com/glimpse/gpm/controller/UsuarioController.java" beforeDir="false" afterPath="$PROJECT_DIR$/gpm/src/main/java/com/glimpse/gpm/controller/UsuarioController.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,11 +19,19 @@
   <component name="CopilotChats">
     <option name="panelChat">
       <chat>
-        <option name="activeSessionId" value="0fbe4e34-d5e1-4422-91ec-85ed32105e8c" />
+        <option name="activeSessionId" value="0062f824-e879-4d71-9177-37a9c6332e62" />
         <option name="sessions">
           <session>
             <option name="chatType" value="PANEL" />
             <option name="id" value="0fbe4e34-d5e1-4422-91ec-85ed32105e8c" />
+            <option name="modeId" value="Ask" />
+            <option name="modelType" value="builtin_family" />
+            <option name="modelValue" value="auto" />
+            <option name="targetType" value="LOCAL" />
+          </session>
+          <session>
+            <option name="chatType" value="PANEL" />
+            <option name="id" value="0062f824-e879-4d71-9177-37a9c6332e62" />
             <option name="modeId" value="Ask" />
             <option name="modelType" value="builtin_family" />
             <option name="modelValue" value="auto" />
@@ -58,8 +66,14 @@
   <component name="MavenImportPreferences">
     <option name="generalSettings">
       <MavenGeneralSettings>
+        <option name="alwaysUpdateSnapshots" value="true" />
         <option name="mavenHomeTypeForPersistence" value="WRAPPER" />
       </MavenGeneralSettings>
+    </option>
+    <option name="importingSettings">
+      <MavenImportingSettings>
+        <option name="jdkForImporter" value="corretto-21" />
+      </MavenImportingSettings>
     </option>
   </component>
   <component name="McpProjectServerCommands">
@@ -71,6 +85,22 @@
   &quot;associatedIndex&quot;: 5
 }</component>
   <component name="ProjectId" id="3Ej58sJ3X1kIYkX40bQRVUol1Uy" />
+  <component name="ProjectSessionTemplates">
+    <option name="panelTemplate">
+      <template>
+        <option name="modeId" value="Agent" />
+        <option name="model">
+          <model>
+            <option name="modelProviderName" value="fd7a4a34-8c1a-4033-ae46-4001c589e6a4" />
+            <option name="modelType" value="byok_id" />
+            <option name="modelValue" value="nvidia/nemotron-3-ultra-550b-a55b" />
+          </model>
+        </option>
+        <option name="targetType" value="BACKGROUND" />
+        <option name="worktreeMode" value="WORKSPACE" />
+      </template>
+    </option>
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -93,14 +123,16 @@
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "Spring Boot.GpmApplication.executor": "Run",
     "codeWithMe.voiceChat.enabledByDefault": "false",
-    "git-widget-placeholder": "main",
+    "copilot.chat.legacySessionMetadata.migrated": "true",
+    "git-widget-placeholder": "fix-BrokenAccessControl",
     "ignore.preview.features.used": "true",
+    "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/edume/OneDrive/Área de Trabalho/Glimpse/back-end",
+    "nodejs_package_manager_path": "npm",
     "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "MavenSettings",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -171,6 +203,21 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>
