@@ -11,6 +11,8 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -18,6 +20,8 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(RecursoNaoEncontradoException.class)
     public ResponseEntity<Map<String, Object>> handleRecursoNaoEncontrado(RecursoNaoEncontradoException ex) {
@@ -108,12 +112,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
-        //Apesar de mostrar o erro genérico para quem faz a request, ele loga o erro no console para o dev
-        ex.printStackTrace();;
+        logger.error("Erro interno não tratado ao processar a requisição", ex);
 
         Map<String, Object> resposta = new HashMap<>();
         resposta.put("erro", "Erro interno do servidor");
-        resposta.put("mensagem", ex.getMessage());
+        resposta.put("mensagem", "Não foi possível processar a solicitação.");
         resposta.put("timestamp", LocalDateTime.now());
         resposta.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(resposta);
