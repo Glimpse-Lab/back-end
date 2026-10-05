@@ -4,10 +4,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
+import com.glimpse.gpm.config.RabbitMQConfig;
+import com.glimpse.gpm.dto.OrcamentoEnviadoMessage;
 import com.glimpse.gpm.dto.cliente.ClienteResponse;
 import com.glimpse.gpm.dto.orcamento.OrcamentoComClienteRequest;
 import com.glimpse.gpm.dto.orcamento.OrcamentoRequest;
@@ -19,7 +23,6 @@ import com.glimpse.gpm.enums.StatusOrcamento;
 import com.glimpse.gpm.mapper.StatusOrcamentoMapper;
 import com.glimpse.gpm.exception.DadosInvalidosException;
 import com.glimpse.gpm.exception.RecursoNaoEncontradoException;
-import com.glimpse.gpm.event.OrcamentoEnviadoEvent;
 import com.glimpse.gpm.repository.ClienteRepository;
 import com.glimpse.gpm.repository.OrcamentoRepository;
 import com.glimpse.gpm.repository.EnderecoRepository;
@@ -30,14 +33,14 @@ public class OrcamentoService {
     private final OrcamentoRepository orcamentoRepository;
     private final ClienteRepository clienteRepository;
     private final EnderecoRepository enderecoRepository;
-    private final ApplicationEventPublisher eventPublisher;
+    private final RabbitTemplate rabbitTemplate;
 
     // Injeção dos repositórios necessários
-    public OrcamentoService(OrcamentoRepository orcamentoRepository, ClienteRepository clienteRepository, EnderecoRepository enderecoRepository, ApplicationEventPublisher eventPublisher) {
+    public OrcamentoService(OrcamentoRepository orcamentoRepository, ClienteRepository clienteRepository, EnderecoRepository enderecoRepository, RabbitTemplate rabbitTemplate) {
         this.orcamentoRepository = orcamentoRepository;
         this.clienteRepository = clienteRepository;
         this.enderecoRepository = enderecoRepository;
-        this.eventPublisher = eventPublisher;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     @Transactional
@@ -185,7 +188,7 @@ public class OrcamentoService {
     }
 
     private void publicarEventoOrcamentoEnviado(Orcamento orcamento) {
-        eventPublisher.publishEvent(new OrcamentoEnviadoEvent(
+        OrcamentoEnviadoMessage message = new OrcamentoEnviadoMessage(
                 orcamento.getId(),
                 orcamento.getCliente().getNome(),
                 orcamento.getCliente().getEmail(),
@@ -193,7 +196,24 @@ public class OrcamentoService {
                 formatarEndereco(orcamento.getEndereco()),
                 orcamento.getStatus().name(),
                 orcamento.getDataSolicitacao()
-        ));
+        );
+
+        Runnable publish = () -> rabbitTemplate.convertAndSend(
+                RabbitMQConfig.EXCHANGE_NOTIFICACOES,
+                RabbitMQConfig.ROUTING_KEY_ORCAMENTO_ENVIADO,
+                message
+        );
+
+        if (TransactionSynchronizationManager.isSynchronizationActive()) {
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    publish.run();
+                }
+            });
+        } else {
+            publish.run();
+        }
     }
 
     private String formatarEndereco(Endereco endereco) {
