@@ -9,6 +9,7 @@ import com.glimpse.gpm.dto.usuario.UpdateUsuarioRequest;
 import com.glimpse.gpm.dto.usuario.UsuarioCadastroRequest;
 import com.glimpse.gpm.dto.usuario.UsuarioRequest;
 import com.glimpse.gpm.dto.usuario.UsuarioResponse;
+import com.glimpse.gpm.dto.common.PageResponse;
 import com.glimpse.gpm.entity.Usuario;
 import com.glimpse.gpm.enums.Role;
 import com.glimpse.gpm.exception.RecursoNaoEncontradoException;
@@ -32,7 +33,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -97,10 +102,21 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @Operation(summary = "Listar todos os usuários", description = "Requer autenticação JWT. Admin vê todos os usuários, PADRAO vê apenas a si mesmo.")
+    @Operation(summary = "Listar usuários", description = "Requer autenticação JWT. Sem parâmetros retorna a lista legada; com page e size retorna metadados de paginação.")
     @GetMapping
-    public ResponseEntity<List<UsuarioResponse>> listar() {
+    public ResponseEntity<?> listar(@RequestParam(required = false) Integer page,
+                                    @RequestParam(required = false) Integer size) {
         Usuario usuarioLogado = usuarioAutenticado();
+        if (page != null || size != null) {
+            int pagina = PageResponse.normalizePage(page);
+            int tamanho = PageResponse.normalizeSize(size);
+            Page<Usuario> usuarios = usuarioLogado.getRole() == Role.ADMIN
+                    ? service.listarUsuariosPaginado(pagina, tamanho)
+                    : new PageImpl<>(List.of(usuarioLogado), PageRequest.of(0, tamanho), 1);
+            return ResponseEntity.ok(PageResponse.from(usuarios.map(u ->
+                    new UsuarioResponse(u.getId(), u.getNome(), u.getCpf(), u.getEmail(), u.getRole()))));
+        }
+
         List<Usuario> usuarios = usuarioLogado.getRole() == Role.ADMIN
                 ? service.listarUsuarios()
                 : List.of(usuarioLogado);

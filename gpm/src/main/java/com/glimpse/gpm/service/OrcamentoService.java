@@ -1,10 +1,14 @@
 package com.glimpse.gpm.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -26,6 +30,11 @@ import com.glimpse.gpm.exception.RecursoNaoEncontradoException;
 import com.glimpse.gpm.repository.ClienteRepository;
 import com.glimpse.gpm.repository.OrcamentoRepository;
 import com.glimpse.gpm.repository.EnderecoRepository;
+import com.glimpse.gpm.dto.common.PageResponse;
+
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
 
 @Service
 public class OrcamentoService {
@@ -78,6 +87,33 @@ public class OrcamentoService {
         return orcamentoRepository.findAll().stream()
                 .map(this::mapearParaResponse)
                 .collect(Collectors.toList());
+    }
+
+    public PageResponse<OrcamentoResponse> listarOrcamentosPaginado(int page, int size, String search, StatusOrcamento status) {
+        String termoBruto = (search == null) ? null : search.trim();
+        final String termo = (termoBruto == null || termoBruto.isEmpty()) ? null : termoBruto;
+
+        // Filtro aplicado no banco, antes da paginação, para que as páginas
+        // reflitam apenas os orçamentos correspondentes à busca/status.
+        Specification<Orcamento> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (status != null) {
+                predicates.add(cb.equal(root.get("status"), status));
+            }
+            if (termo != null) {
+                String like = "%" + termo.toLowerCase() + "%";
+                Join<Orcamento, Cliente> cliente = root.join("cliente", JoinType.LEFT);
+                predicates.add(cb.or(
+                        cb.like(cb.lower(cliente.get("nome")), like),
+                        cb.like(cb.lower(cliente.get("email")), like),
+                        cb.like(cb.lower(root.get("descricaoProjeto")), like)));
+            }
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+
+        return PageResponse.from(orcamentoRepository
+                .findAll(spec, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")))
+                .map(this::mapearParaResponse));
     }
 
     public OrcamentoResponse buscarOrcamentoPorId(Long id) {

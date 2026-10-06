@@ -7,6 +7,9 @@ import com.glimpse.gpm.exception.RecursoNaoEncontradoException;
 import com.glimpse.gpm.repository.UsuarioRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import java.util.Optional;
@@ -50,6 +53,10 @@ public class UsuarioService {
      */
     public List<Usuario> listarUsuarios() {
         return repository.findAll();
+    }
+
+    public Page<Usuario> listarUsuariosPaginado(int page, int size) {
+        return repository.findAll(PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "nome")));
     }
 
     /**

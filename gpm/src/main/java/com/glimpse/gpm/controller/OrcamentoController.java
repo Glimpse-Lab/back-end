@@ -12,12 +12,17 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.glimpse.gpm.config.ApiErrorResponses;
 import com.glimpse.gpm.dto.orcamento.OrcamentoComClienteRequest;
 import com.glimpse.gpm.dto.orcamento.OrcamentoRequest;
 import com.glimpse.gpm.dto.orcamento.OrcamentoStatusRequest;
 import com.glimpse.gpm.dto.orcamento.OrcamentoResponse;
+import com.glimpse.gpm.dto.common.PageResponse;
+import com.glimpse.gpm.enums.StatusOrcamento;
+import com.glimpse.gpm.exception.DadosInvalidosException;
+import com.glimpse.gpm.mapper.StatusOrcamentoMapper;
 import com.glimpse.gpm.service.OrcamentoService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -48,10 +53,33 @@ public class OrcamentoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.salvarComCliente(request));
     }
 
-    @Operation(summary = "Listar todos os orçamentos", description = "Requer autenticação JWT. Retorna uma lista com todos os orçamentos cadastrados.")
+    @Operation(summary = "Listar orçamentos", description = "Requer autenticação JWT. Sem parâmetros retorna a lista legada; com page e size retorna metadados de paginação. Opcionalmente filtra por search (nome do cliente, e-mail ou descrição do projeto) e por status antes de paginar.")
     @GetMapping
-    public ResponseEntity<List<OrcamentoResponse>> listar() {
-        return ResponseEntity.ok(service.listarOrcamentos());
+    public ResponseEntity<?> listar(@RequestParam(required = false) Integer page,
+                                    @RequestParam(required = false) Integer size,
+                                    @RequestParam(required = false) String search,
+                                    @RequestParam(required = false) String status) {
+        if (page == null && size == null) {
+            return ResponseEntity.ok(service.listarOrcamentos());
+        }
+        return ResponseEntity.ok(service.listarOrcamentosPaginado(
+                PageResponse.normalizePage(page), PageResponse.normalizeSize(size), search, parseStatusFiltro(status)));
+    }
+
+    private StatusOrcamento parseStatusFiltro(String status) {
+        if (status == null || status.isBlank()) {
+            return null;
+        }
+        try {
+            return StatusOrcamento.valueOf(status.trim().toUpperCase());
+        } catch (IllegalArgumentException ignored) {
+            // tenta a chave usada pelo front-end (ex.: "pending")
+        }
+        try {
+            return StatusOrcamentoMapper.fromFrontend(status);
+        } catch (IllegalArgumentException e) {
+            throw new DadosInvalidosException("Status inválido para filtro: " + status);
+        }
     }
 
     @Operation(summary = "Buscar orçamento por ID", description = "Requer autenticação JWT. Retorna os detalhes de um orçamento específico.")
