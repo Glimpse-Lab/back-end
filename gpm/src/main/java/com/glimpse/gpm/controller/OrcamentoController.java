@@ -73,7 +73,6 @@ public class OrcamentoController {
         try {
             return StatusOrcamento.valueOf(status.trim().toUpperCase());
         } catch (IllegalArgumentException ignored) {
-            // tenta a chave usada pelo front-end (ex.: "pending")
         }
         try {
             return StatusOrcamentoMapper.fromFrontend(status);
