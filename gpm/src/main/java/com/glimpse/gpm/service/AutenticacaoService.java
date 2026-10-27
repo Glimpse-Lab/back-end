@@ -5,6 +5,7 @@ import com.glimpse.gpm.entity.Usuario;
 import com.glimpse.gpm.exception.TokenInvalidoException;
 import com.glimpse.gpm.repository.PasswordResetTokenRepository;
 import com.glimpse.gpm.repository.UsuarioRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -22,6 +23,9 @@ public class AutenticacaoService implements UserDetailsService {
     private final PasswordResetTokenRepository tokenRepository;
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
+
+    @Value("${app.base-url}")
+    private String baseUrl;
 
     public AutenticacaoService(UsuarioRepository repository,
                                PasswordResetTokenRepository tokenRepository,
@@ -41,13 +45,9 @@ public class AutenticacaoService implements UserDetailsService {
 
     @Transactional
     public void solicitarRecuperacao(String email) {
-        // Se o usuário existir, gera token e envia. Se não existir, não faz nada silenciosamente (segurança).
         repository.findByEmail(email).ifPresent(usuario -> {
-
-            // 1. Limpa os tokens antigos desse usuário no banco
             tokenRepository.deleteByUsuario(usuario);
 
-            // 2. Gera novo Token UUID e salva
             String tokenStr = UUID.randomUUID().toString();
             PasswordResetToken resetToken = new PasswordResetToken();
             resetToken.setToken(tokenStr);
@@ -55,10 +55,7 @@ public class AutenticacaoService implements UserDetailsService {
             resetToken.setDataExpiracao(LocalDateTime.now().plusMinutes(15));
             tokenRepository.save(resetToken);
 
-            // 3. Monta URL apontando para o seu frontend (ajuste a porta do React se necessário)
-            String link = "http://localhost:5173/redefinir-senha?token=" + tokenStr;
-
-            // 4. Dispara e-mail de forma assíncrona
+            String link = baseUrl + "/redefinir-senha?token=" + tokenStr;
             emailService.enviarEmailRecuperacao(usuario.getEmail(), link);
         });
     }
@@ -74,12 +71,9 @@ public class AutenticacaoService implements UserDetailsService {
         }
 
         Usuario usuario = resetToken.getUsuario();
-
-        // Aplica o hash BCrypt na nova senha antes de salvar
         usuario.setSenha(passwordEncoder.encode(novaSenha));
         repository.save(usuario);
 
-        // Deleta o token para evitar que seja usado duas vezes
         tokenRepository.delete(resetToken);
     }
 }

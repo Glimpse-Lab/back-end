@@ -2,6 +2,7 @@ package com.glimpse.gpm.security;
 
 import java.util.Arrays;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -26,6 +27,9 @@ public class SecurityConfig {
 
     private final SecurityFilter securityFilter;
 
+    @Value("${spring.profiles.active:prod}")
+    private String activeProfile;
+
     public SecurityConfig(SecurityFilter securityFilter) {
         this.securityFilter = securityFilter;
     }
@@ -44,10 +48,15 @@ public class SecurityConfig {
                     req.requestMatchers(HttpMethod.POST, "/orcamentos").permitAll();
                     req.requestMatchers(HttpMethod.POST, "/orcamentos/com-cliente").permitAll();
                     req.requestMatchers(HttpMethod.GET, "/uploads/**").permitAll();
-                    req.requestMatchers(HttpMethod.GET, "/h2-console/**").permitAll();
-                    req.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll();
                     req.requestMatchers(HttpMethod.POST, "/usuarios/esqueci-senha").permitAll();
                     req.requestMatchers(HttpMethod.POST, "/usuarios/redefinir-senha").permitAll();
+
+                    // Swagger apenas em dev
+                    if ("dev".equals(activeProfile)) {
+                        req.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll();
+                        req.requestMatchers(HttpMethod.GET, "/h2-console/**").permitAll();
+                    }
+
                     req.anyRequest().authenticated();
                 })
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
@@ -72,11 +81,7 @@ public class SecurityConfig {
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setExposedHeaders(Arrays.asList(
-                "Content-Type",
-                "Authorization",
-                "X-Requested-With"
-        ));
+        configuration.setExposedHeaders(Arrays.asList("Content-Type", "Authorization", "X-Requested-With"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
 
