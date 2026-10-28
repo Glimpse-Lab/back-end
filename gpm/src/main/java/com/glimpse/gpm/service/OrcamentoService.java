@@ -1,13 +1,21 @@
 package com.glimpse.gpm.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
+import com.glimpse.gpm.config.RabbitMQConfig;
+import com.glimpse.gpm.dto.OrcamentoEnviadoMessage;
 import com.glimpse.gpm.dto.cliente.ClienteResponse;
 import com.glimpse.gpm.dto.orcamento.OrcamentoComClienteRequest;
 import com.glimpse.gpm.dto.orcamento.OrcamentoRequest;
@@ -19,10 +27,14 @@ import com.glimpse.gpm.enums.StatusOrcamento;
 import com.glimpse.gpm.mapper.StatusOrcamentoMapper;
 import com.glimpse.gpm.exception.DadosInvalidosException;
 import com.glimpse.gpm.exception.RecursoNaoEncontradoException;
-import com.glimpse.gpm.event.OrcamentoEnviadoEvent;
 import com.glimpse.gpm.repository.ClienteRepository;
 import com.glimpse.gpm.repository.OrcamentoRepository;
 import com.glimpse.gpm.repository.EnderecoRepository;
+import com.glimpse.gpm.dto.common.PageResponse;
+
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
 
 @Service
 public class OrcamentoService {
@@ -30,14 +42,14 @@ public class OrcamentoService {
     private final OrcamentoRepository orcamentoRepository;
     private final ClienteRepository clienteRepository;
     private final EnderecoRepository enderecoRepository;
-    private final ApplicationEventPublisher eventPublisher;
+    private final RabbitTemplate rabbitTemplate;
 
     // Injeção dos repositórios necessários
-    public OrcamentoService(OrcamentoRepository orcamentoRepository, ClienteRepository clienteRepository, EnderecoRepository enderecoRepository, ApplicationEventPublisher eventPublisher) {
+    public OrcamentoService(OrcamentoRepository orcamentoRepository, ClienteRepository clienteRepository, EnderecoRepository enderecoRepository, RabbitTemplate rabbitTemplate) {
         this.orcamentoRepository = orcamentoRepository;
         this.clienteRepository = clienteRepository;
         this.enderecoRepository = enderecoRepository;
-        this.eventPublisher = eventPublisher;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     @Transactional
@@ -75,6 +87,33 @@ public class OrcamentoService {
         return orcamentoRepository.findAll().stream()
                 .map(this::mapearParaResponse)
                 .collect(Collectors.toList());
+    }
+
+    public PageResponse<OrcamentoResponse> listarOrcamentosPaginado(int page, int size, String search, StatusOrcamento status) {
+        String termoBruto = (search == null) ? null : search.trim();
+        final String termo = (termoBruto == null || termoBruto.isEmpty()) ? null : termoBruto;
+
+        // Filtro aplicado no banco, antes da paginação, para que as páginas
+        // reflitam apenas os orçamentos correspondentes à busca/status.
+        Specification<Orcamento> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (status != null) {
+                predicates.add(cb.equal(root.get("status"), status));
+            }
+            if (termo != null) {
+                String like = "%" + termo.toLowerCase() + "%";
+                Join<Orcamento, Cliente> cliente = root.join("cliente", JoinType.LEFT);
+                predicates.add(cb.or(
+                        cb.like(cb.lower(cliente.get("nome")), like),
+                        cb.like(cb.lower(cliente.get("email")), like),
+                        cb.like(cb.lower(root.get("descricaoProjeto")), like)));
+            }
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+
+        return PageResponse.from(orcamentoRepository
+                .findAll(spec, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")))
+                .map(this::mapearParaResponse));
     }
 
     public OrcamentoResponse buscarOrcamentoPorId(Long id) {
@@ -185,7 +224,7 @@ public class OrcamentoService {
     }
 
     private void publicarEventoOrcamentoEnviado(Orcamento orcamento) {
-        eventPublisher.publishEvent(new OrcamentoEnviadoEvent(
+        OrcamentoEnviadoMessage message = new OrcamentoEnviadoMessage(
                 orcamento.getId(),
                 orcamento.getCliente().getNome(),
                 orcamento.getCliente().getEmail(),
@@ -193,7 +232,24 @@ public class OrcamentoService {
                 formatarEndereco(orcamento.getEndereco()),
                 orcamento.getStatus().name(),
                 orcamento.getDataSolicitacao()
-        ));
+        );
+
+        Runnable publish = () -> rabbitTemplate.convertAndSend(
+                RabbitMQConfig.EXCHANGE_NOTIFICACOES,
+                RabbitMQConfig.ROUTING_KEY_ORCAMENTO_ENVIADO,
+                message
+        );
+
+        if (TransactionSynchronizationManager.isSynchronizationActive()) {
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    publish.run();
+                }
+            });
+        } else {
+            publish.run();
+        }
     }
 
     private String formatarEndereco(Endereco endereco) {

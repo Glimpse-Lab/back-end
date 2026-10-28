@@ -28,6 +28,7 @@ API REST para a **GPM Esquadrias**, desenvolvida com Spring Boot. Responsável p
 - [Java 21](https://adoptium.net/) (JDK com preview habilitado)
 - [Maven 3.x](https://maven.apache.org/) ou use o wrapper `mvnw` incluído
 - [PostgreSQL](https://www.postgresql.org/) 14 ou superior em execução local
+- [RabbitMQ](https://www.rabbitmq.com/) (opcional, para envio de e-mails assíncrono)
 
 ---
 
