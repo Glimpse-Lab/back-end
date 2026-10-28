@@ -9,7 +9,7 @@
   <component name="ChangeListManager">
     <list default="true" id="81697235-a81f-428b-a5dd-b8285cddd2db" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gpm/src/main/java/com/glimpse/gpm/controller/OrcamentoController.java" beforeDir="false" afterPath="$PROJECT_DIR$/gpm/src/main/java/com/glimpse/gpm/controller/OrcamentoController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gpm/src/main/java/com/glimpse/gpm/config/RabbitMQConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/gpm/src/main/java/com/glimpse/gpm/config/RabbitMQConfig.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,6 +44,7 @@
   </component>
   <component name="CopilotPersistence">
     <persistenceIdMap>
+      <entry key="_C:/Users/Alexandre/Desktop/Faculdade/Glimpse/back-end" value="3LKItIfsOW4Jaokv60GgVkBQ2N0" />
       <entry key="_C:/Users/Alexandre/Desktop/Glimpse/back-end" value="3EmzDsgrKo3qLe5VsiBouEeB5Li" />
       <entry key="_C:/Users/SAMSUNG/Downloads/Nova pasta/Nova pasta/back-end" value="3Ej58sJ3X1kIYkX40bQRVUol1Uy" />
       <entry key="_C:/Users/edume/OneDrive/Área de Trabalho/Glimpse/back-end" value="3ICFhuknBQEOmlPQpgPOZ5XBYmy" />
@@ -88,6 +89,7 @@
   <component name="ProjectSessionTemplates">
     <option name="panelTemplate">
       <template>
+        <option name="ensembleEnabled" value="false" />
         <option name="modeId" value="Agent" />
         <option name="model">
           <model>
@@ -100,6 +102,7 @@
         <option name="worktreeMode" value="WORKSPACE" />
       </template>
     </option>
+    <option name="version" value="1" />
   </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -124,7 +127,7 @@
     &quot;Spring Boot.GpmApplication.executor&quot;: &quot;Run&quot;,
     &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
     &quot;copilot.chat.legacySessionMetadata.migrated&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;feat/notificationService&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;ignore.preview.features.used&quot;: &quot;true&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
@@ -185,10 +188,18 @@
     <recent_temporary>
       <list>
         <item itemvalue="Spring Boot.GpmApplication" />
-        <item itemvalue="JUnit.All in gpm (1)" />
         <item itemvalue="JUnit.All in gpm" />
+        <item itemvalue="JUnit.All in gpm (1)" />
       </list>
     </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-37e91769500f-intellij.indexing.shared.core-IU-261.27258.48" />
+        <option value="bundled-js-predefined-d6986cc7102b-31caf2ab9e3c-JavaScript-IU-261.27258.48" />
+      </set>
+    </attachedChunks>
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
