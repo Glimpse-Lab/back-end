@@ -4,15 +4,11 @@ import com.glimpse.gpm.entity.Categoria;
 import com.glimpse.gpm.entity.Produto;
 import com.glimpse.gpm.exception.DadosInvalidosException;
 import com.glimpse.gpm.exception.RecursoNaoEncontradoException;
-import com.glimpse.gpm.repository.ProdutoRepository;
 import com.glimpse.gpm.repository.CategoriaRepository;
+import com.glimpse.gpm.repository.ProdutoRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.UUID;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,10 +18,17 @@ public class ProdutoService {
 
     private final ProdutoRepository repository;
     private final CategoriaRepository categoriaRepository;
+    private final FileUploadService fileUploadService;
 
-    public ProdutoService(ProdutoRepository repository, CategoriaRepository categoriaRepository) {
+    @Value("${app.base-url:http://localhost:8080}")
+    private String baseUrl;
+
+    public ProdutoService(ProdutoRepository repository,
+                          CategoriaRepository categoriaRepository,
+                          FileUploadService fileUploadService) {
         this.repository = repository;
         this.categoriaRepository = categoriaRepository;
+        this.fileUploadService = fileUploadService;
     }
 
     public Produto salvar(Produto produto) {
@@ -50,12 +53,11 @@ public class ProdutoService {
         if (categoriaOpt.isEmpty()) {
             throw new RecursoNaoEncontradoException("Categoria não encontrada para o ID informado.");
         }
-        // replace transient Categoria with managed entity
         produto.setCategoria(categoriaOpt.get());
+
         if (produto.getEspecificacaoTecnica() != null && produto.getEspecificacaoTecnica().length() > 1000) {
             throw new DadosInvalidosException("A especificação técnica não pode exceder 1000 caracteres.");
         }
-
 
         return repository.save(produto);
     }
@@ -69,15 +71,11 @@ public class ProdutoService {
     }
 
     public Produto atualizar(Long id, Produto produtoAtualizado) {
-        Optional<Produto> produtoEncontrado = repository.findById(id);
+        Produto produtoBanco = repository.findById(id)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Produto não encontrado."));
 
-        if (produtoEncontrado.isEmpty()) {
-            throw new RecursoNaoEncontradoException("Produto não encontrado.");
-        }
-
-        Produto produtoBanco = produtoEncontrado.get();
-
-        if (!produtoBanco.getNome().equals(produtoAtualizado.getNome()) && repository.existsByNome(produtoAtualizado.getNome())) {
+        if (!produtoBanco.getNome().equals(produtoAtualizado.getNome())
+                && repository.existsByNome(produtoAtualizado.getNome())) {
             throw new DadosInvalidosException("Já existe outro produto cadastrado com esse nome.");
         }
 
@@ -105,20 +103,6 @@ public class ProdutoService {
     }
 
     public String salvarArquivoLocal(MultipartFile file) {
-        if (file == null || file.isEmpty()) return null;
-        try {
-            Path pastaUpload = Paths.get("./gpm_uploads");
-            if (!Files.exists(pastaUpload)) {
-                Files.createDirectories(pastaUpload);
-            }
-            String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-            Path filePath = pastaUpload.resolve(fileName);
-
-            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-
-            return "http://localhost:8080/uploads/" + fileName;
-        } catch (Exception e) {
-            throw new RuntimeException("Falha ao salvar a imagem no disco", e);
-        }
+        return fileUploadService.salvar(file, "http://localhost:8080");
     }
 }
